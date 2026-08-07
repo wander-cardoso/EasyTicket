@@ -1,0 +1,1 @@
+// Essa classe sera modelo para ser herdada por outras services exemplo (SenhaService)

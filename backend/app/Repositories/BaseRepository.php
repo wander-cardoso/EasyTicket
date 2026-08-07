@@ -1,0 +1,1 @@
+// Essa classe irá conter metodos comuns exemplo ( findById(), findAll(), delete())
