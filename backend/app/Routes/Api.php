@@ -9,74 +9,79 @@ use App\Controllers\TipoAtendimentoController;
 
 // Registra todas as rotas da API.
 
-function registerRoutes(Router $router): void
+function registerRoutes(
+    Router $router,
+    TipoAtendimentoController $tipoAtendimentoController,
+
+): void
 {
     // Tipos de Atendimento
     $router->get(
         '/api/tipos-atendimento',
-        [TipoAtendimentoController::class, 'index']
+        [$tipoAtendimentoController, 'listar']
     );
 
     $router->post(
         '/api/tipos-atendimento',
-        [TipoAtendimentoController::class, 'store']
+        [$tipoAtendimentoController, 'criar']
     );
 
     $router->put(
         '/api/tipos-atendimento/{id}',
-        [TipoAtendimentoController::class, 'update']
+        [$tipoAtendimentoController, 'atualizar']
     );
 
     $router->delete(
         '/api/tipos-atendimento/{id}',
-        [TipoAtendimentoController::class, 'destroy']
+        [$tipoAtendimentoController, 'excluir']
     );
-
+/*
     // Balcões
     $router->get(
         '/api/balcoes',
-        [BalcaoController::class, 'index']
+        [$balcaoController, 'listar']
     );
 
     $router->post(
         '/api/balcoes',
-        [BalcaoController::class, 'store']
+        [$balcaoController, 'criar']
     );
 
     $router->put(
         '/api/balcoes/{id}',
-        [BalcaoController::class, 'update'
+        [$balcaoController, 'atualizar'
         ]
     );
 
     $router->delete(
         '/api/balcoes/{id}',
-        [BalcaoController::class, 'destroy']
+        [$balcaoController, 'excluir']
     );
 
     // Senhas
     $router->get(
         '/api/senhas',
-        [SenhaController::class, 'index']
+        [$senhaController, 'listar']
     );
 
     $router->post(
         '/api/senhas',
-        [SenhaController::class, 'store']
+        [$senhaController, 'criar']
     );
 
     $router->post(
         '/api/senhas/chamar-proxima',
-        [SenhaController::class, 'chamarProxima']
+        [$senhaController, 'chamarProxima']
     );
 
     $router->post(
         '/api/senhas/iniciar-atendimento',
-        [SenhaController::class, 'iniciarAtendimento']
+        [$senhaController, 'iniciarAtendimento']
     );
 
     $router->post(
         '/api/senhas/finalizar-atendimento',
-        [SenhaController::class, 'finalizarAtendimento']
+        [$senhaController, 'finalizarAtendimento']
     );
-}
+*/
+    }

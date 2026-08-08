@@ -21,13 +21,11 @@ class JsonResponse
     //Retorna uma resposta de erro
     public static function error(
         string $message,
-        mixed $errors = [],
         int $statusCode = 400
     ): void {
 
         self::sendError(
             $message,
-            $errors,
             $statusCode
         );
     }
@@ -55,7 +53,6 @@ class JsonResponse
     //Este método é privado porque somente error() deve utilizá-lo
 private static function sendError(
     string $message,
-    mixed $errors,
     int $statusCode
 ): void
 {
@@ -66,7 +63,6 @@ private static function sendError(
     echo json_encode([
         'success' => false,
         'message' => $message,
-        'errors'  => $errors
     ], JSON_UNESCAPED_UNICODE);
 
     exit;

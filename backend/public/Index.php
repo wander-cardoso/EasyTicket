@@ -7,14 +7,19 @@ use App\Core\Application;
 use App\Core\Request;
 use function App\Routes\registerRoutes;
 
+
 $app = new Application();
 
 $router = $app->router();
+$tipoAtendimentoController = $app->tipoAtendimentoController();
 
 // Regista todas as rotas da API
 require_once dirname(__DIR__) . '/app/Routes/Api.php';
 
-registerRoutes($router);
+registerRoutes(
+    $router,
+    $tipoAtendimentoController
+);
 
 $request = new Request();
 

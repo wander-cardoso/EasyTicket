@@ -3,7 +3,7 @@
 namespace App\Models;
 
 // Representa um Tipo de Atendimento do sistema
-class TipoAtendimento
+class TipoAtendimento implements \JsonSerializable
 {
 
     private ?int $id;
@@ -25,6 +25,16 @@ class TipoAtendimento
         $this->sigla = $sigla;
         $this->descricao = $descricao;
     }
+
+    public function jsonSerialize(): array
+{
+    return [
+        'id' => $this->id,
+        'nome' => $this->nome,
+        'sigla' => $this->sigla,
+        'descricao' => $this->descricao
+    ];
+}
 
     public function getId(): int
     {

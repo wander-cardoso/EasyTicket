@@ -7,6 +7,7 @@ use App\Responses\JsonResponse;
 // Responsável por registar e executar as rotas da aplicação
 class Router
 {
+
     // Lista de rotas registadas
     private array $routes = [];
 
@@ -51,6 +52,8 @@ class Router
    // Procura e executa a rota correspondente
 public function dispatch(Request $request): void
 {
+
+
     foreach ($this->routes as $route) {
 
         // Primeiro verifica se o método HTTP é o mesmo
@@ -70,7 +73,7 @@ public function dispatch(Request $request): void
         }
 
         // Instancia o Controller (possivel remocao)
-        $controller = new $route['action'][0];
+        $controller = $route['action'][0];
 
         // Nome do método que será executado
         $method = $route['action'][1];
@@ -83,9 +86,9 @@ public function dispatch(Request $request): void
 
     JsonResponse::error(
         'Rota não encontrada.',
-        [],
         404
     );
+
 }
 
 // Verifica se uma rota corresponde à URL informada
