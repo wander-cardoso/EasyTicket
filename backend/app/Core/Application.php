@@ -4,16 +4,20 @@ namespace App\Core;
 
 use Dotenv\Dotenv;
 use App\Config\Database;
+use App\Controllers\BalcaoController;
 use App\Core\Router;
 use App\Repositories\TipoAtendimentoRepository;
 use App\Services\TipoAtendimentoService;
 use App\Controllers\TipoAtendimentoController;
+use App\Repositories\BalcaoRepository;
+use App\Services\BalcaoService;
 
 class Application
 {
     private Router $router;
 
     private TipoAtendimentoController $tipoAtendimentoController;
+    private BalcaoController $balcaoController;
 
     public function __construct()
     {
@@ -29,16 +33,21 @@ class Application
         // Cria a conexão com o banco
         $connection = Database::getConnection();
 
-        // Cria o Repository
-        $repository = new TipoAtendimentoRepository($connection);
-
-        // Cria o Service
-        $service = new TipoAtendimentoService($repository);
-
-        // Cria o Controller
+        // Objeto do Repository
+        $repositoryTipoAtendimento = new TipoAtendimentoRepository($connection);
+        // Objeto do Service
+        $serviceTipoAtendimemto = new TipoAtendimentoService($repositoryTipoAtendimento);
+        // Objeto do Controller
         $this->tipoAtendimentoController = new TipoAtendimentoController(
-            $service
+            $serviceTipoAtendimemto
         );
+
+        // Objeto do Repository
+        $repositoryBalcao = new BalcaoRepository($connection);
+        // Objeto do Service
+        $serviceBalcao = new BalcaoService($repositoryBalcao);
+        // Objeto do Controller
+        $this->balcaoController = new BalcaoController($serviceBalcao);
     }
 
     // Retorna a instância do Router
@@ -52,4 +61,10 @@ class Application
     {
         return $this->tipoAtendimentoController;
     }
+    // Retorna o Controller do Balcao
+    public function balcaoContrller(): BalcaoController{
+        return $this->balcaoController;
+    }
+
+
 }

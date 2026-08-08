@@ -27,14 +27,14 @@ class TipoAtendimento implements \JsonSerializable
     }
 
     public function jsonSerialize(): array
-{
-    return [
-        'id' => $this->id,
-        'nome' => $this->nome,
-        'sigla' => $this->sigla,
-        'descricao' => $this->descricao
-    ];
-}
+    {
+        return [
+            'id' => $this->id,
+            'nome' => $this->nome,
+            'sigla' => $this->sigla,
+            'descricao' => $this->descricao
+        ];
+    }
 
     public function getId(): int
     {
@@ -60,7 +60,7 @@ class TipoAtendimento implements \JsonSerializable
     {
         $this->sigla = $sigla;
     }
-    
+
     public function getDescricao(): string
     {
         return $this->descricao;

@@ -12,9 +12,9 @@ use App\Controllers\TipoAtendimentoController;
 function registerRoutes(
     Router $router,
     TipoAtendimentoController $tipoAtendimentoController,
+    BalcaoController $balcaoController,
 
-): void
-{
+): void {
     // Tipos de Atendimento
     $router->get(
         '/api/tipos-atendimento',
@@ -35,7 +35,6 @@ function registerRoutes(
         '/api/tipos-atendimento/{id}',
         [$tipoAtendimentoController, 'excluir']
     );
-/*
     // Balcões
     $router->get(
         '/api/balcoes',
@@ -49,7 +48,9 @@ function registerRoutes(
 
     $router->put(
         '/api/balcoes/{id}',
-        [$balcaoController, 'atualizar'
+        [
+            $balcaoController,
+            'atualizar'
         ]
     );
 
@@ -58,7 +59,8 @@ function registerRoutes(
         [$balcaoController, 'excluir']
     );
 
-    // Senhas
+    /*
+                    // Senhas
     $router->get(
         '/api/senhas',
         [$senhaController, 'listar']
@@ -84,4 +86,4 @@ function registerRoutes(
         [$senhaController, 'finalizarAtendimento']
     );
 */
-    }
+}

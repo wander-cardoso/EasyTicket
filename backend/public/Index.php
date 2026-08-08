@@ -12,13 +12,16 @@ $app = new Application();
 
 $router = $app->router();
 $tipoAtendimentoController = $app->tipoAtendimentoController();
+$balcaoController = $app->balcaoContrller();
 
 // Regista todas as rotas da API
 require_once dirname(__DIR__) . '/app/Routes/Api.php';
 
 registerRoutes(
     $router,
-    $tipoAtendimentoController
+    $tipoAtendimentoController,
+    $balcaoController
+    // $senhaController
 );
 
 $request = new Request();
