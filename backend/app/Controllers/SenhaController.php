@@ -9,6 +9,7 @@ use App\Services\SenhaService;
 use App\Exceptions\DatabaseException;
 use InvalidArgumentException;
 
+
 // Responsável por receber as requisições relacionadas às Senhas
 class SenhaController
 {
@@ -20,7 +21,7 @@ class SenhaController
         $this->service = $service;
     }
 
-    // Retorna todas as senhas
+    // Retorna as senhas com limite de 10 por pagina
     public function listar(): void
     {
         try {
@@ -95,7 +96,7 @@ class SenhaController
                 null
             );
 
-            $resultado = $this->service->emitir($senha);
+            $resultado = $this->service->emitirSenha($senha);
 
             JsonResponse::success(
                 'Senha emitida com sucesso.',
