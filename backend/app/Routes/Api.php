@@ -13,6 +13,7 @@ function registerRoutes(
     Router $router,
     TipoAtendimentoController $tipoAtendimentoController,
     BalcaoController $balcaoController,
+    SenhaController $senhaController
 
 ): void {
     // Tipos de Atendimento
@@ -59,18 +60,25 @@ function registerRoutes(
         [$balcaoController, 'excluir']
     );
 
-    /*
-                    // Senhas
+
+
+    // Senhas
     $router->get(
         '/api/senhas',
         [$senhaController, 'listar']
     );
-
+    
+    $router->get(
+        '/api/senhas/{codigo}',
+        [$senhaController, 'consultar']
+    );
+    
     $router->post(
         '/api/senhas',
-        [$senhaController, 'criar']
+        [$senhaController, 'emitir']
     );
 
+    
     $router->post(
         '/api/senhas/chamar-proxima',
         [$senhaController, 'chamarProxima']
@@ -85,5 +93,4 @@ function registerRoutes(
         '/api/senhas/finalizar-atendimento',
         [$senhaController, 'finalizarAtendimento']
     );
-*/
 }

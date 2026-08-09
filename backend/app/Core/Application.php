@@ -5,12 +5,15 @@ namespace App\Core;
 use Dotenv\Dotenv;
 use App\Config\Database;
 use App\Controllers\BalcaoController;
+use App\Controllers\SenhaController;
 use App\Core\Router;
 use App\Repositories\TipoAtendimentoRepository;
 use App\Services\TipoAtendimentoService;
 use App\Controllers\TipoAtendimentoController;
 use App\Repositories\BalcaoRepository;
+use App\Repositories\SenhaRepository;
 use App\Services\BalcaoService;
+use App\Services\SenhaService;
 
 class Application
 {
@@ -18,6 +21,7 @@ class Application
 
     private TipoAtendimentoController $tipoAtendimentoController;
     private BalcaoController $balcaoController;
+    private SenhaController $senhaController;
 
     public function __construct()
     {
@@ -48,6 +52,13 @@ class Application
         $serviceBalcao = new BalcaoService($repositoryBalcao);
         // Objeto do Controller
         $this->balcaoController = new BalcaoController($serviceBalcao);
+
+        // Objeto do Repository
+        $repositorySenha = new SenhaRepository($connection);
+        // Objeto do Service
+        $serviceSenha = new SenhaService($repositorySenha);
+        // Objeto do Controller
+        $this->senhaController = new SenhaController($serviceSenha);
     }
 
     // Retorna a instância do Router
@@ -62,9 +73,13 @@ class Application
         return $this->tipoAtendimentoController;
     }
     // Retorna o Controller do Balcao
-    public function balcaoContrller(): BalcaoController{
+    public function balcaoContrller(): BalcaoController
+    {
         return $this->balcaoController;
     }
-
-
+    // Retorna o Controller da Senha
+    public function senhaController(): SenhaController
+    {
+        return $this->senhaController;
+    }
 }
