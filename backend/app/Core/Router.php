@@ -49,11 +49,9 @@ class Router
         ];
     }
 
-   // Procura e executa a rota correspondente
+// Procura e executa a rota correspondente
 public function dispatch(Request $request): void
 {
-
-
     foreach ($this->routes as $route) {
 
         // Primeiro verifica se o método HTTP é o mesmo
@@ -72,23 +70,60 @@ public function dispatch(Request $request): void
             continue;
         }
 
-        // Instancia o Controller (possivel remocao)
+        // Obtém o Controller
         $controller = $route['action'][0];
 
-        // Nome do método que será executado
+        // Obtém o método que será executado
         $method = $route['action'][1];
 
-        // Executa o método enviando os parâmetros encontrados
-        $controller->$method(...array_values($parameters));
+        // Obtém os parâmetros necessários pelo método do Controller
+        $reflection = new \ReflectionMethod($controller, $method);
+
+        // Lista de argumentos que serão enviados ao Controller
+        $arguments = [];
+
+        foreach ($reflection->getParameters() as $parameter) {
+
+            // Obtém o tipo do parâmetro
+            $type = $parameter->getType();
+
+            // Se o método precisar de Request, injeta o objeto Request
+            if (
+                $type instanceof \ReflectionNamedType &&
+                $type->getName() === Request::class
+            ) {
+                $arguments[] = $request;
+                continue;
+            }
+
+            // Caso contrário, procura o parâmetro capturado na URL
+            $name = $parameter->getName();
+
+            if (isset($parameters[$name])) {
+                $arguments[] = $parameters[$name];
+                continue;
+            }
+
+            // Parâmetro obrigatório não encontrado
+            JsonResponse::error(
+                'Parâmetro obrigatório não informado.',
+                400
+            );
+
+            return;
+        }
+
+        // Executa o método com os argumentos necessários
+        $controller->$method(...$arguments);
 
         return;
     }
 
+    // Nenhuma rota encontrada
     JsonResponse::error(
         'Rota não encontrada.',
         404
     );
-
 }
 
 // Verifica se uma rota corresponde à URL informada

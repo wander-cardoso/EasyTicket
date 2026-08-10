@@ -1,0 +1,110 @@
+@if (senhaEmitida !== null) {
+
+  <h1>Senha emitida</h1>
+
+  <p>Código: {{ senhaEmitida.codigo }}</p>
+
+  <p>
+    Tipo de atendimento:
+    {{ tipoAtendimentoSelecionado?.nome }}
+  </p>
+
+  <p>Data e hora da emissão: {{ senhaEmitida.dataEmissao }}</p>
+
+  <button type="button" (click)="voltarTelaInicial()">
+    Voltar
+  </button>
+
+} @else if (mostrarConsulta) {
+
+  <h1>Consultar senha</h1>
+
+  <label for="codigoConsulta">Código da senha</label>
+
+  <input id="codigoConsulta" type="text" [(ngModel)]="codigoConsulta">
+
+  @if (erroConsulta !== '') {
+    <p>{{ erroConsulta }}</p>
+  }
+
+  <button type="button" (click)="buscarSenha()">
+    Buscar Senha
+  </button>
+
+  <button type="button" (click)="voltarTelaInicial()">
+    Voltar
+  </button>
+
+  @if (senhaConsultada !== null) {
+
+    <div>
+      <h2>Informações da senha</h2>
+
+      <p>Código: {{ senhaConsultada.codigo }}</p>
+
+      <p>
+        Tipo de atendimento:
+        {{ obterNomeTipoAtendimento(senhaConsultada.tipoAtendimentoId) }}
+      </p>
+
+      <p>Data e hora da emissão: {{ senhaConsultada.dataEmissao }}</p>
+
+      <p>Status: {{ senhaConsultada.status }}</p>
+
+@if (senhaConsultada.status !== 'emitida' && senhaConsultada.balcaoId !== null) {
+  <p>
+    Balcão:
+    {{ obterBalcao(senhaConsultada.balcaoId)?.nome }}
+    Nº {{ obterBalcao(senhaConsultada.balcaoId)?.numero }}
+  </p>
+}
+
+      @if (senhaConsultada.dataChamada !== null) {
+        <p>Data e hora da chamada: {{ senhaConsultada.dataChamada }}</p>
+      }
+
+      @if (senhaConsultada.dataInicioAtendimento !== null) {
+        <p>Data e hora do início do atendimento: {{ senhaConsultada.dataInicioAtendimento }}</p>
+      }
+
+      @if (senhaConsultada.dataFinalizacao !== null) {
+        <p>Data e hora da finalização: {{ senhaConsultada.dataFinalizacao }}</p>
+      }
+
+    </div>
+  }
+
+} @else {
+
+  @if (carregandoTiposAtendimento) {
+
+    <p>Carregando tipos de atendimento...</p>
+
+  } @else {
+
+    <h1>Escolha o tipo de atendimento</h1>
+
+    <div>
+      @for (tipo of tiposAtendimento; track tipo.id) {
+        <button type="button" (click)="selecionarTipoAtendimento(tipo)">
+          {{ tipo.nome }}
+        </button>
+      }
+    </div>
+
+    @if (tipoAtendimentoSelecionado !== null) {
+
+      <p>Atendimento selecionado: {{ tipoAtendimentoSelecionado.nome }}</p>
+
+      <button type="button" (click)="emitirSenha()">
+        Emitir senha
+      </button>
+    }
+
+    <button type="button" (click)="abrirConsulta()">
+      Consultar senha
+    </button>
+
+  }
+
+}
