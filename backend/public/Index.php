@@ -29,6 +29,9 @@ $router = $app->router();
 $tipoAtendimentoController = $app->tipoAtendimentoController();
 $balcaoController = $app->balcaoContrller();
 $senhaController = $app->senhaController();
+$utilizadorController = $app->utilizadorController();
+$authController = $app->authController();
+$authMiddleware = $app->authMiddleware();
 
 // Regista todas as rotas da API
 require_once dirname(__DIR__) . '/app/Routes/Api.php';
@@ -37,10 +40,14 @@ registerRoutes(
     $router,
     $tipoAtendimentoController,
     $balcaoController,
-    $senhaController
+    $senhaController,
+    $utilizadorController,
+    $authController,
+    $authMiddleware
 );
 
 $request = new Request();
 
 // Executa a rota correspondente
 $router->dispatch($request);
+

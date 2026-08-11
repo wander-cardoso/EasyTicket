@@ -14,7 +14,12 @@ use App\Repositories\BalcaoRepository;
 use App\Repositories\SenhaRepository;
 use App\Services\BalcaoService;
 use App\Services\SenhaService;
-
+use App\Controllers\UtilizadorController;
+use App\Repositories\UtilizadorRepository;
+use App\Services\UtilizadorService;
+use App\Controllers\AuthController;
+use App\Services\AuthService;
+use App\Middleware\AuthMiddleware;
 class Application
 {
     private Router $router;
@@ -22,6 +27,9 @@ class Application
     private TipoAtendimentoController $tipoAtendimentoController;
     private BalcaoController $balcaoController;
     private SenhaController $senhaController;
+    private UtilizadorController $utilizadorController;
+    private AuthController $authController;
+    private AuthMiddleware $authMiddleware;
 
     public function __construct()
     {
@@ -59,7 +67,25 @@ class Application
         $serviceSenha = new SenhaService($repositorySenha);
         // Objeto do Controller
         $this->senhaController = new SenhaController($serviceSenha);
-    }
+
+        // Objeto do Repository
+        $repositoryUtilizador = new UtilizadorRepository($connection);
+        // Objeto do Service
+        $serviceUtilizador = new UtilizadorService($repositoryUtilizador);
+        // Objeto do Controller
+        $this->utilizadorController = new UtilizadorController(
+            $serviceUtilizador
+        );
+
+        // Objeto do Service de autenticação
+        $serviceAuth = new AuthService($repositoryUtilizador);
+        // Objeto do Controller de autenticação
+        $this->authController = new AuthController($serviceAuth);
+
+
+        // Cria o Middleware de autenticação
+        $this->authMiddleware = new AuthMiddleware();
+        }
 
     // Retorna a instância do Router
     public function router(): Router
@@ -82,4 +108,22 @@ class Application
     {
         return $this->senhaController;
     }
+    // Retorna o Controller do Utilizador
+    public function utilizadorController(): UtilizadorController
+    {
+        return $this->utilizadorController;
+    }
+    // Retorna o Controller do Utilizador
+    public function authController(): AuthController
+    {
+        return $this->authController;
+    }
+
+    // Retorna o Middleware de autenticação
+    public function authMiddleware(): AuthMiddleware
+    {
+        return $this->authMiddleware;
+    }
+
+    
 }

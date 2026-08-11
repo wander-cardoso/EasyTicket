@@ -7,6 +7,9 @@ class Request
 {
     private array $body;
 
+    // Guarda os dados do utilizador autenticado
+    private ?array $utilizadorAutenticado = null;
+
     // Assim que a classe é criada, o corpo da requisição é lido apenas uma vez
     public function __construct()
     {
@@ -17,13 +20,13 @@ class Request
         $this->body = json_decode($content, true) ?? [];
     }
 
-    // Esse metodo retorna o tipo do HTTP utilizado(GET POST PUT DELETE)
+    // Retorna o método HTTP utilizado
     public function method(): string
     {
         return $_SERVER['REQUEST_METHOD'];
     }
 
-    //Retorna apenas o caminho da URL.
+    // Retorna apenas o caminho da URL
     public function uri(): string
     {
         return parse_url(
@@ -38,9 +41,24 @@ class Request
         return $this->body;
     }
 
-    // Retorna um único campo do JSON(possivel remocao)
-    public function input(string $key, mixed $default = null): mixed
-    {
+    // Retorna um único campo do JSON
+    public function input(
+        string $key,
+        mixed $default = null
+    ): mixed {
         return $this->body[$key] ?? $default;
+    }
+
+    // Guarda os dados do utilizador autenticado
+    public function definirUtilizadorAutenticado(
+        array $utilizador
+    ): void {
+        $this->utilizadorAutenticado = $utilizador;
+    }
+
+    // Retorna os dados do utilizador autenticado
+    public function utilizadorAutenticado(): ?array
+    {
+        return $this->utilizadorAutenticado;
     }
 }
