@@ -232,4 +232,119 @@ public function editar(
         $utilizadorAtualizado
     );
 }
+// Atualiza os dados do próprio utilizador
+public function atualizarProprioPerfil(
+    int $id,
+    ?string $nome,
+    ?string $nomeUtilizador,
+    ?string $passwordAtual,
+    ?string $novaPassword
+): Utilizador {
+
+    // Busca o utilizador atual
+    $utilizador = $this->repository->consultar($id);
+
+    if ($utilizador === null) {
+        throw new InvalidArgumentException(
+            'Utilizador não encontrado.'
+        );
+    }
+
+    // Atualiza o nome, caso tenha sido informado
+    if ($nome !== null) {
+
+        $nome = trim($nome);
+
+        if ($nome === '') {
+            throw new InvalidArgumentException(
+                'O nome não pode estar vazio.'
+            );
+        }
+
+        $utilizador->setNome($nome);
+    }
+
+    // Atualiza o nome de utilizador, caso tenha sido informado
+    if ($nomeUtilizador !== null) {
+
+        $nomeUtilizador = mb_strtolower(
+            trim($nomeUtilizador),
+            'UTF-8'
+        );
+
+        if ($nomeUtilizador === '') {
+            throw new InvalidArgumentException(
+                'O nome de utilizador não pode estar vazio.'
+            );
+        }
+
+        // Verifica se outro utilizador já utiliza esse nome
+        $outroUtilizador =
+            $this->repository->buscarPorNomeUtilizador(
+                $nomeUtilizador
+            );
+
+        if (
+            $outroUtilizador !== null &&
+            $outroUtilizador->getId() !== $id
+        ) {
+            throw new InvalidArgumentException(
+                'O nome de utilizador já está em uso.'
+            );
+        }
+
+        $utilizador->setNomeUtilizador(
+            $nomeUtilizador
+        );
+    }
+
+    // Alteração da password
+    if ($novaPassword !== null) {
+
+        if ($passwordAtual === null || $passwordAtual === '') {
+            throw new InvalidArgumentException(
+                'Informe a password atual.'
+            );
+        }
+
+        // Confirma a password atual
+        if (!password_verify(
+            $passwordAtual,
+            $utilizador->getPassword()
+        )) {
+            throw new InvalidArgumentException(
+                'A password atual está incorreta.'
+            );
+        }
+
+        // Valida a nova password
+        if (mb_strlen($novaPassword) < 8) {
+            throw new InvalidArgumentException(
+                'A password deve ter pelo menos 8 caracteres.'
+            );
+        }
+
+        if (
+            !preg_match('/[A-Za-z]/', $novaPassword) ||
+            !preg_match('/[0-9]/', $novaPassword)
+        ) {
+            throw new InvalidArgumentException(
+                'A password deve conter letras e números.'
+            );
+        }
+
+        // Cria o novo hash
+        $novoHash = password_hash(
+            $novaPassword,
+            PASSWORD_DEFAULT
+        );
+
+        $utilizador->setPassword($novoHash);
+    }
+
+    // Persiste as alterações
+    return $this->repository->atualizar(
+        $utilizador
+    );
+}
 }

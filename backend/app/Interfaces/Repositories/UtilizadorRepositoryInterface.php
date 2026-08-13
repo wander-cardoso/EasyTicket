@@ -22,4 +22,8 @@ interface UtilizadorRepositoryInterface
 
     // Edita um utilizador existente
     public function editar(Utilizador $utilizador): Utilizador;
+
+    // Atualizar um utilizador Perfil (OPERADOR)
+    public function atualizar(Utilizador $utilizador): Utilizador;
+
 }

@@ -5,6 +5,7 @@ namespace App\Routes;
 use App\Controllers\AuthController;
 use App\Core\Router;
 use App\Controllers\BalcaoController;
+use App\Controllers\DashboardController;
 use App\Controllers\SenhaController;
 use App\Controllers\TipoAtendimentoController;
 use App\Controllers\UtilizadorController;
@@ -17,13 +18,12 @@ function registerRoutes(
     BalcaoController $balcaoController,
     SenhaController $senhaController,
     UtilizadorController $utilizadorController,
+    DashboardController $dashboardController,
     AuthController $authController,
     AuthMiddleware $authMiddleware
 ): void {
 
-    // =========================================================
     // AUTENTICAÇÃO
-    // =========================================================
 
     // Login é público
     $router->post(
@@ -31,10 +31,15 @@ function registerRoutes(
         [$authController, 'login']
     );
 
-
-    // =========================================================
+    
     // UTILIZADORES
-    // =========================================================
+
+    // Dashboard
+    $router->get(
+        '/api/me/dashboard',
+        [$dashboardController, 'obter'],
+        $authMiddleware
+    );
 
     // Apenas GESTOR pode criar utilizadores
     $router->post(
@@ -51,6 +56,12 @@ function registerRoutes(
         $authMiddleware,
         ['GESTOR']
     );
+    // Para que o OPERADOR consiga editar seus dados
+    $router->put(
+        '/api/me',
+        [$utilizadorController, 'atualizarProprioPerfil'],
+        $authMiddleware
+    );
 
     // Apenas GESTOR pode listar utilizadores
     $router->get(
@@ -58,6 +69,13 @@ function registerRoutes(
         [$utilizadorController, 'listar'],
         $authMiddleware,
         ['GESTOR']
+    );
+
+    // Rota de ambos PERFIS
+    $router->get(
+        '/api/me',
+        [$utilizadorController, 'me'],
+        $authMiddleware
     );
 
     // Apenas GESTOR pode consultar utilizador por ID
@@ -69,9 +87,7 @@ function registerRoutes(
     );
 
 
-    // =========================================================
     // TIPOS DE ATENDIMENTO
-    // =========================================================
 
     // Público
     $router->get(
@@ -104,14 +120,19 @@ function registerRoutes(
     );
 
 
-    // =========================================================
     // BALCÕES
-    // =========================================================
 
     // Público
     $router->get(
         '/api/balcoes',
         [$balcaoController, 'listar']
+    );
+
+    // Opcao o escolher o balcao
+    $router->post(
+        '/api/balcoes/selecionar',
+        [$balcaoController, 'selecionar'],
+        $authMiddleware
     );
 
     // Apenas GESTOR pode criar
@@ -139,9 +160,7 @@ function registerRoutes(
     );
 
 
-    // =========================================================
     // SENHAS
-    // =========================================================
 
     // Público
     $router->post(

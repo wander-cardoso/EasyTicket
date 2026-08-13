@@ -10,6 +10,7 @@ class Request
     // Guarda os dados do utilizador autenticado
     private ?array $utilizadorAutenticado = null;
 
+
     // Assim que a classe é criada, o corpo da requisição é lido apenas uma vez
     public function __construct()
     {
@@ -61,4 +62,5 @@ class Request
     {
         return $this->utilizadorAutenticado;
     }
+
 }

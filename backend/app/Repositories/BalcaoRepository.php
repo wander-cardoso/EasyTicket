@@ -50,7 +50,6 @@ class BalcaoRepository extends BaseRepository implements BalcaoRepositoryInterfa
             }
 
             return $balcoes;
-
         } catch (PDOException $exception) {
 
             throw new DatabaseException(
@@ -61,102 +60,145 @@ class BalcaoRepository extends BaseRepository implements BalcaoRepositoryInterfa
         }
     }
 
-    // Verifica se o nome do balcão já existe
-public function nomeExiste(
-    string $nome,
-    ?int $id = null
-): bool {
+    // Busca um balcão pelo ID
+public function buscarPorId(int $id): ?Balcao
+{
     try {
 
-        // SQL responsável por verificar se o nome já está cadastrado
         $sql = "
+            SELECT
+                id,
+                numero,
+                nome,
+                tipo_atendimento_id
+            FROM balcoes
+            WHERE id = :id
+            LIMIT 1
+        ";
+
+        $statement = $this->connection->prepare($sql);
+
+        $statement->execute([
+            ':id' => $id
+        ]);
+
+        $registo = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($registo === false) {
+            return null;
+        }
+
+        return new Balcao(
+            (int) $registo['id'],
+            (int) $registo['numero'],
+            $registo['nome'],
+            (int) $registo['tipo_atendimento_id']
+        );
+
+    } catch (PDOException $exception) {
+
+        throw new DatabaseException(
+            'Erro ao consultar o balcão.',
+            0,
+            $exception
+        );
+    }
+}
+
+    // Verifica se o nome do balcão já existe
+    public function nomeExiste(
+        string $nome,
+        ?int $id = null
+    ): bool {
+        try {
+
+            // SQL responsável por verificar se o nome já está cadastrado
+            $sql = "
             SELECT COUNT(*)
             FROM balcoes
             WHERE nome = :nome
         ";
 
-        // Se estiver atualizando, ignora o próprio balcão
-        if ($id !== null) {
-            $sql .= " AND id <> :id";
+            // Se estiver atualizando, ignora o próprio balcão
+            if ($id !== null) {
+                $sql .= " AND id <> :id";
+            }
+
+            // Prepara a query
+            $statement = $this->connection->prepare($sql);
+
+            // Define os parâmetros da consulta
+            $parametros = [
+                ':nome' => $nome
+            ];
+
+            if ($id !== null) {
+                $parametros[':id'] = $id;
+            }
+
+            // Executa o SELECT
+            $statement->execute($parametros);
+
+            // Obtém a quantidade de registros encontrados
+            $quantidade = (int) $statement->fetchColumn();
+
+            return $quantidade > 0;
+        } catch (PDOException $exception) {
+
+            throw new DatabaseException(
+                'Erro ao verificar o nome do balcão.',
+                0,
+                $exception
+            );
         }
-
-        // Prepara a query
-        $statement = $this->connection->prepare($sql);
-
-        // Define os parâmetros da consulta
-        $parametros = [
-            ':nome' => $nome
-        ];
-
-        if ($id !== null) {
-            $parametros[':id'] = $id;
-        }
-
-        // Executa o SELECT
-        $statement->execute($parametros);
-
-        // Obtém a quantidade de registros encontrados
-        $quantidade = (int) $statement->fetchColumn();
-
-        return $quantidade > 0;
-
-    } catch (PDOException $exception) {
-
-        throw new DatabaseException(
-            'Erro ao verificar o nome do balcão.',
-            0,
-            $exception
-        );
     }
-}
-// Verifica se o número do balcão já existe
-public function numeroExiste(
-    int $numero,
-    ?int $id = null
-): bool {
-    try {
+    // Verifica se o número do balcão já existe
+    public function numeroExiste(
+        int $numero,
+        ?int $id = null
+    ): bool {
+        try {
 
-        // SQL responsável por verificar se o número já está cadastrado
-        $sql = "
+            // SQL responsável por verificar se o número já está cadastrado
+            $sql = "
             SELECT COUNT(*)
             FROM balcoes
             WHERE numero = :numero
         ";
 
-        // Se estiver atualizando, ignora o próprio balcão
-        if ($id !== null) {
-            $sql .= " AND id <> :id";
+            // Se estiver atualizando, ignora o próprio balcão
+            if ($id !== null) {
+                $sql .= " AND id <> :id";
+            }
+
+            // Prepara a query
+            $statement = $this->connection->prepare($sql);
+
+            // Define os parâmetros da consulta
+            $parametros = [
+                ':numero' => $numero
+            ];
+
+            if ($id !== null) {
+                $parametros[':id'] = $id;
+            }
+
+            // Executa o SELECT
+            $statement->execute($parametros);
+
+            // Obtém a quantidade de registros encontrados
+            $quantidade = (int) $statement->fetchColumn();
+
+            return $quantidade > 0;
+        } catch (PDOException $exception) {
+
+            throw new DatabaseException(
+                'Erro ao verificar o número do balcão.',
+                0,
+                $exception
+            );
         }
-
-        // Prepara a query
-        $statement = $this->connection->prepare($sql);
-
-        // Define os parâmetros da consulta
-        $parametros = [
-            ':numero' => $numero
-        ];
-
-        if ($id !== null) {
-            $parametros[':id'] = $id;
-        }
-
-        // Executa o SELECT
-        $statement->execute($parametros);
-
-        // Obtém a quantidade de registros encontrados
-        $quantidade = (int) $statement->fetchColumn();
-
-        return $quantidade > 0;
-
-    } catch (PDOException $exception) {
-
-        throw new DatabaseException(
-            'Erro ao verificar o número do balcão.',
-            0,
-            $exception
-        );
     }
-}
     public function criar(Balcao $balcao): bool
     {
         try {
@@ -186,7 +228,6 @@ public function numeroExiste(
             ]);
 
             return $this->sucesso($statement);
-
         } catch (PDOException $exception) {
 
             throw new DatabaseException(
@@ -225,7 +266,6 @@ public function numeroExiste(
             ]);
 
             return $this->sucesso($statement);
-
         } catch (PDOException $exception) {
 
             throw new DatabaseException(
@@ -255,7 +295,6 @@ public function numeroExiste(
             ]);
 
             return $this->sucesso($statement);
-
         } catch (PDOException $exception) {
 
             throw new DatabaseException(

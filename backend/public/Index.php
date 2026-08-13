@@ -27,9 +27,10 @@ $app = new Application();
 
 $router = $app->router();
 $tipoAtendimentoController = $app->tipoAtendimentoController();
-$balcaoController = $app->balcaoContrller();
+$balcaoController = $app->balcaoController();
 $senhaController = $app->senhaController();
 $utilizadorController = $app->utilizadorController();
+$dashboardController = $app->dashboardController();
 $authController = $app->authController();
 $authMiddleware = $app->authMiddleware();
 
@@ -42,6 +43,7 @@ registerRoutes(
     $balcaoController,
     $senhaController,
     $utilizadorController,
+    $dashboardController,
     $authController,
     $authMiddleware
 );

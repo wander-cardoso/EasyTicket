@@ -39,7 +39,9 @@ class UtilizadorRepository extends BaseRepository implements UtilizadorRepositor
             $dados = $statement->fetch();
 
             // Utilizador não encontrado
-            if ($dados === false) { return null; }
+            if ($dados === false) {
+                return null;
+            }
 
             // Converte os dados do banco para o Model
             return new Utilizador(
@@ -50,22 +52,22 @@ class UtilizadorRepository extends BaseRepository implements UtilizadorRepositor
                 $dados['perfil'],
                 $dados['criado_em']
             );
-
         } catch (PDOException $exception) {
             throw new DatabaseException(
-                'Erro ao consultar o utilizador.', 0,
+                'Erro ao consultar o utilizador.',
+                0,
                 $exception
             );
         }
     }
 
-    
-            // Cria um novo utilizador
-public function criar(Utilizador $utilizador): Utilizador
-{
-    try {
-        // SQL responsável por criar o utilizador
-        $sql = "
+
+    // Cria um novo utilizador
+    public function criar(Utilizador $utilizador): Utilizador
+    {
+        try {
+            // SQL responsável por criar o utilizador
+            $sql = "
             INSERT INTO utilizadores (
                 nome,
                 nome_utilizador,
@@ -79,44 +81,43 @@ public function criar(Utilizador $utilizador): Utilizador
             )
         ";
 
-        // Prepara a query
-        $statement = $this->connection->prepare($sql);
+            // Prepara a query
+            $statement = $this->connection->prepare($sql);
 
-        // Executa o INSERT
-        $statement->execute([
-            ':nome' => $utilizador->getNome(),
-            ':nome_utilizador' => $utilizador->getNomeUtilizador(),
-            ':password' => $utilizador->getPassword(),
-            ':perfil' => $utilizador->getPerfil()
-        ]);
+            // Executa o INSERT
+            $statement->execute([
+                ':nome' => $utilizador->getNome(),
+                ':nome_utilizador' => $utilizador->getNomeUtilizador(),
+                ':password' => $utilizador->getPassword(),
+                ':perfil' => $utilizador->getPerfil()
+            ]);
 
-        // Obtém o ID criado pelo banco
-        $id = (int) $this->connection->lastInsertId();
+            // Obtém o ID criado pelo banco
+            $id = (int) $this->connection->lastInsertId();
 
-        // Retorna o utilizador criado
-        return new Utilizador(
-            $id,
-            $utilizador->getNome(),
-            $utilizador->getNomeUtilizador(),
-            $utilizador->getPassword(),
-            $utilizador->getPerfil(),
-            date('Y-m-d H:i:s')
-        );
-
-    } catch (PDOException $exception) {
-        throw new DatabaseException(
-            'Erro ao criar o utilizador.',
-            0,
-            $exception
-        );
+            // Retorna o utilizador criado
+            return new Utilizador(
+                $id,
+                $utilizador->getNome(),
+                $utilizador->getNomeUtilizador(),
+                $utilizador->getPassword(),
+                $utilizador->getPerfil(),
+                date('Y-m-d H:i:s')
+            );
+        } catch (PDOException $exception) {
+            throw new DatabaseException(
+                'Erro ao criar o utilizador.',
+                0,
+                $exception
+            );
+        }
     }
-}
 
-// Lista todos os utilizadores
-public function listar(): array
-{
-    try {
-        $sql = "
+    // Lista todos os utilizadores
+    public function listar(): array
+    {
+        try {
+            $sql = "
             SELECT
                 id,
                 nome,
@@ -128,41 +129,40 @@ public function listar(): array
             ORDER BY nome ASC
         ";
 
-        $statement = $this->connection->prepare($sql);
+            $statement = $this->connection->prepare($sql);
 
-        $statement->execute();
+            $statement->execute();
 
-        $dados = $statement->fetchAll();
+            $dados = $statement->fetchAll();
 
-        $utilizadores = [];
+            $utilizadores = [];
 
-        foreach ($dados as $dado) {
-            $utilizadores[] = new Utilizador(
-                (int) $dado['id'],
-                $dado['nome'],
-                $dado['nome_utilizador'],
-                $dado['password'],
-                $dado['perfil'],
-                $dado['criado_em']
+            foreach ($dados as $dado) {
+                $utilizadores[] = new Utilizador(
+                    (int) $dado['id'],
+                    $dado['nome'],
+                    $dado['nome_utilizador'],
+                    $dado['password'],
+                    $dado['perfil'],
+                    $dado['criado_em']
+                );
+            }
+
+            return $utilizadores;
+        } catch (PDOException $exception) {
+            throw new DatabaseException(
+                'Erro ao listar os utilizadores.',
+                0,
+                $exception
             );
         }
-
-        return $utilizadores;
-
-    } catch (PDOException $exception) {
-        throw new DatabaseException(
-            'Erro ao listar os utilizadores.',
-            0,
-            $exception
-        );
     }
-}
 
-// Consulta um utilizador pelo ID
-public function consultar(int $id): ?Utilizador
-{
-    try {
-        $sql = "
+    // Consulta um utilizador pelo ID
+    public function consultar(int $id): ?Utilizador
+    {
+        try {
+            $sql = "
             SELECT
                 id,
                 nome,
@@ -175,41 +175,40 @@ public function consultar(int $id): ?Utilizador
             LIMIT 1
         ";
 
-        $statement = $this->connection->prepare($sql);
+            $statement = $this->connection->prepare($sql);
 
-        $statement->execute([
-            ':id' => $id
-        ]);
+            $statement->execute([
+                ':id' => $id
+            ]);
 
-        $dados = $statement->fetch();
+            $dados = $statement->fetch();
 
-        if ($dados === false) {
-            return null;
+            if ($dados === false) {
+                return null;
+            }
+
+            return new Utilizador(
+                (int) $dados['id'],
+                $dados['nome'],
+                $dados['nome_utilizador'],
+                $dados['password'],
+                $dados['perfil'],
+                $dados['criado_em']
+            );
+        } catch (PDOException $exception) {
+            throw new DatabaseException(
+                'Erro ao consultar o utilizador.',
+                0,
+                $exception
+            );
         }
-
-        return new Utilizador(
-            (int) $dados['id'],
-            $dados['nome'],
-            $dados['nome_utilizador'],
-            $dados['password'],
-            $dados['perfil'],
-            $dados['criado_em']
-        );
-
-    } catch (PDOException $exception) {
-        throw new DatabaseException(
-            'Erro ao consultar o utilizador.',
-            0,
-            $exception
-        );
     }
-}
 
-// Edita um utilizador existente
-public function editar(Utilizador $utilizador): Utilizador
-{
-    try {
-        $sql = "
+    // Edita um utilizador existente
+    public function editar(Utilizador $utilizador): Utilizador
+    {
+        try {
+            $sql = "
             UPDATE utilizadores
             SET
                 nome = :nome,
@@ -219,25 +218,57 @@ public function editar(Utilizador $utilizador): Utilizador
             WHERE id = :id
         ";
 
-        $statement = $this->connection->prepare($sql);
+            $statement = $this->connection->prepare($sql);
 
-        $statement->execute([
-            ':nome' => $utilizador->getNome(),
-            ':nome_utilizador' => $utilizador->getNomeUtilizador(),
-            ':password' => $utilizador->getPassword(),
-            ':perfil' => $utilizador->getPerfil(),
-            ':id' => $utilizador->getId()
-        ]);
+            $statement->execute([
+                ':nome' => $utilizador->getNome(),
+                ':nome_utilizador' => $utilizador->getNomeUtilizador(),
+                ':password' => $utilizador->getPassword(),
+                ':perfil' => $utilizador->getPerfil(),
+                ':id' => $utilizador->getId()
+            ]);
 
-        return $utilizador;
-
-    } catch (PDOException $exception) {
-        throw new DatabaseException(
-            'Erro ao editar o utilizador.',
-            0,
-            $exception
-        );
+            return $utilizador;
+        } catch (PDOException $exception) {
+            throw new DatabaseException(
+                'Erro ao editar o utilizador.',
+                0,
+                $exception
+            );
+        }
     }
-}
 
+    // Atualiza os dados do utilizador
+    public function atualizar(Utilizador $utilizador): Utilizador
+    {
+        try {
+
+            $sql = "
+            UPDATE utilizadores
+            SET
+                nome = :nome,
+                nome_utilizador = :nome_utilizador,
+                password = :password
+            WHERE id = :id
+        ";
+
+            $statement = $this->connection->prepare($sql);
+
+            $statement->execute([
+                ':nome' => $utilizador->getNome(),
+                ':nome_utilizador' => $utilizador->getNomeUtilizador(),
+                ':password' => $utilizador->getPassword(),
+                ':id' => $utilizador->getId()
+            ]);
+
+            return $utilizador;
+        } catch (PDOException $exception) {
+
+            throw new DatabaseException(
+                'Erro ao atualizar o utilizador.',
+                0,
+                $exception
+            );
+        }
+    }
 }

@@ -3,6 +3,8 @@ import { PainelPublico } from './features/painel-publico/painel-publico';
 import { Operador } from './features/operador/operador';
 import { Gestor } from './features/gestor/gestor';
 import { BalcaoAtendimento } from './features/balcao-atendimento/balcao-atendimento';
+import { Dashboard } from './features/dashboard/dashboard';
+
 
 export const routes: Routes = [
     {
@@ -20,6 +22,10 @@ export const routes: Routes = [
     {
         path: 'gestor',
         component: Gestor
+    },
+        {
+        path: 'dashboard',
+        component: Dashboard
     },
     {
         path: '**',

@@ -44,6 +44,26 @@ class BalcaoService
         return $this->repository->criar($balcao);
     }
 
+    // Busca um balcão pelo ID
+    public function buscarPorId(int $id): Balcao
+    {
+        if ($id <= 0) {
+            throw new \InvalidArgumentException(
+                'Balcão inválido.'
+            );
+        }
+
+        $balcao = $this->repository->buscarPorId($id);
+
+        if ($balcao === null) {
+            throw new \InvalidArgumentException(
+                'Balcão não encontrado.'
+            );
+        }
+
+        return $balcao;
+    }
+
     // Atualiza um balcão
     public function atualizar(
         int $id,

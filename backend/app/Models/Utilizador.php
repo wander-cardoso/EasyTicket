@@ -34,10 +34,22 @@ class Utilizador
         return $this->id;
     }
 
-    // Retorna o nome do utilizador
-    public function getNome(): string
+    // Reorna o Nome do Utilizador
+    public function getNome() :string
     {
         return $this->nome;
+    }
+
+    // Persiste o nome do utilizador
+    public function setNome(string $nome): void
+    {
+        $this->nome = $nome;
+    }
+    // Persiste o nome do utilizador (Login)
+    public function setNomeUtilizador(
+        string $nomeUtilizador
+    ): void {
+        $this->nomeUtilizador = $nomeUtilizador;
     }
 
     // Retorna o nome de utilizador
@@ -50,6 +62,12 @@ class Utilizador
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    // Persiste o password do utilizador
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
     }
 
     // Retorna o perfil do utilizador

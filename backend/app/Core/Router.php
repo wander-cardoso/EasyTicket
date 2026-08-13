@@ -127,12 +127,12 @@ class Router
             if ($route['middleware'] !== null) {
 
                 // Valida o JWT
-                $usuarioAutenticado =
+                $utilizadorAutenticado =
                     $route['middleware']->verificar();
 
                 // Guarda o utilizador autenticado na requisição
                 $request->definirUtilizadorAutenticado(
-                    $usuarioAutenticado
+                    $utilizadorAutenticado
                 );
 
 
@@ -142,7 +142,7 @@ class Router
                 if ($route['perfisPermitidos'] !== []) {
 
                     $this->profileMiddleware->verificar(
-                        $usuarioAutenticado,
+                        $utilizadorAutenticado,
                         $route['perfisPermitidos']
                     );
                 }

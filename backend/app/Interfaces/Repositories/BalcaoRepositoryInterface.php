@@ -34,4 +34,7 @@ interface BalcaoRepositoryInterface
         ?int $id = null
     ): bool;
 
+    // Busca um balcão pelo ID
+    public function buscarPorId(int $id): ?Balcao;
+
 }

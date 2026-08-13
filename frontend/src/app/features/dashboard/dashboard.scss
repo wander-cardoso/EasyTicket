@@ -1,0 +1,305 @@
+.dashboard {
+  width: 100%;
+  min-height: 100%;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+
+/* Área principal do Dashboard */
+.dashboard-conteudo {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+/* Cabeçalho */
+.dashboard-header {
+  margin-bottom: 32px;
+}
+
+
+.titulo-pequeno {
+  display: block;
+  margin-bottom: 6px;
+
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+
+.dashboard-header h1 {
+  margin: 0;
+
+  font-size: 32px;
+  font-weight: 700;
+}
+
+
+.dashboard-header p {
+  margin: 8px 0 0;
+
+  font-size: 15px;
+}
+
+
+/* Cards */
+.card {
+  margin-bottom: 24px;
+  padding: 24px;
+
+  border-radius: 12px;
+  border: 1px solid #ddd;
+
+  background: #fff;
+}
+
+
+.card-cabecalho {
+  margin-bottom: 24px;
+}
+
+
+.card-cabecalho h2 {
+  margin: 0;
+
+  font-size: 20px;
+}
+
+
+/* Grid de informações */
+.dados-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 24px;
+}
+
+
+.dado {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+.dado-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+.dado strong {
+  font-size: 15px;
+}
+
+
+/* Perfil */
+.perfil {
+  display: inline-flex;
+  align-items: center;
+
+  width: fit-content;
+
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* Balcão atual */
+.balcao-atual {
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+}
+
+
+.balcao-numero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 72px;
+  height: 72px;
+
+  border-radius: 12px;
+}
+
+
+.balcao-numero span {
+  font-size: 11px;
+}
+
+
+.balcao-numero strong {
+  font-size: 28px;
+}
+
+
+.balcao-info {
+  flex: 1;
+}
+
+
+.balcao-info h3 {
+  margin: 4px 0 0;
+
+  font-size: 18px;
+}
+
+
+/* Estado sem balcão */
+.sem-balcao {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+}
+
+
+.sem-balcao-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  font-weight: 700;
+}
+
+
+.sem-balcao h3 {
+  margin: 0 0 4px;
+
+  font-size: 16px;
+}
+
+
+.sem-balcao p {
+  margin: 0;
+
+  font-size: 14px;
+}
+
+
+.sem-balcao > div:nth-child(2) {
+  flex: 1;
+}
+
+
+/* Botões */
+.botao-principal,
+.botao-secundario {
+  border: none;
+  border-radius: 8px;
+
+  padding: 10px 16px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+.botao-principal {
+  background: #046a38;
+  color: #fff;
+}
+
+
+.botao-secundario {
+  background: #eee;
+}
+
+
+/* Estados */
+.estado {
+  min-height: 300px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+
+.estado.erro {
+  padding: 32px;
+}
+
+
+.loader {
+  width: 32px;
+  height: 32px;
+
+  border: 3px solid #ddd;
+  border-top-color: #046a38;
+
+  border-radius: 50%;
+
+  animation: carregar 0.8s linear infinite;
+}
+
+
+@keyframes carregar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* Responsividade */
+@media (max-width: 768px) {
+
+  .dashboard {
+    padding: 20px;
+  }
+
+
+  .dashboard-header h1 {
+    font-size: 26px;
+  }
+
+
+  .dados-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .balcao-atual {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+
+  .sem-balcao {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+
+  .botao-principal,
+  .botao-secundario {
+    width: 100%;
+  }
+}

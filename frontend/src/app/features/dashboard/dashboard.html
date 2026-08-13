@@ -1,0 +1,353 @@
+<!-- Estado de carregamento -->
+@if (carregando) {
+
+<div class="estado">
+
+  <div class="loader"></div>
+
+  <p>
+    A carregar o Dashboard...
+  </p>
+
+</div>
+
+}
+
+<!-- Estado de erro -->
+@else if (erro) {
+
+<div class="estado erro">
+
+  <h2>
+    Não foi possível carregar o Dashboard
+  </h2>
+
+  <p>
+    {{ erro }}
+  </p>
+
+</div>
+
+}
+
+<!-- Dashboard carregado -->
+@else if (dados) {
+
+<div class="dashboard-conteudo">
+
+  <!-- ============================================ -->
+  <!-- CABEÇALHO -->
+  <!-- ============================================ -->
+
+  <header class="dashboard-header">
+
+    <div>
+
+      <span class="titulo-pequeno">
+        Dashboard
+      </span>
+
+      <h1>
+        Olá, {{ dados.utilizador.nome }}
+      </h1>
+
+      <p>
+        Aqui estão as informações da sua conta.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- ============================================ -->
+  <!-- DADOS DO UTILIZADOR -->
+  <!-- ============================================ -->
+
+  <section class="card">
+
+    <div class="card-cabecalho">
+
+      <div>
+
+        <span class="titulo-pequeno">
+          Conta
+        </span>
+
+        <h2>
+          Dados do utilizador
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="dados-grid">
+
+      <!-- Nome -->
+      <div class="dado">
+
+        <span class="dado-label">
+          Nome
+        </span>
+
+        <strong>
+          {{ dados.utilizador.nome }}
+        </strong>
+
+      </div>
+
+
+      <!-- Nome de utilizador -->
+      <div class="dado">
+
+        <span class="dado-label">
+          Nome de utilizador
+        </span>
+
+        <strong>
+          {{ dados.utilizador.nomeUtilizador }}
+        </strong>
+
+      </div>
+
+
+      <!-- Perfil -->
+      <div class="dado">
+
+        <span class="dado-label">
+          Perfil
+        </span>
+
+        <span class="perfil">
+          {{ dados.utilizador.perfil }}
+        </span>
+
+      </div>
+
+
+      <!-- Data de criação -->
+      <div class="dado">
+
+        <span class="dado-label">
+          Conta criada em
+        </span>
+
+        <strong>
+          {{ dados.utilizador.criadoEm }}
+        </strong>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ============================================ -->
+  <!-- BALCÃO ATUAL -->
+  <!-- ============================================ -->
+
+  <section class="card">
+
+    <div class="card-cabecalho">
+
+      <div>
+
+        <span class="titulo-pequeno">
+          Atendimento
+        </span>
+
+        <h2>
+          Balcão
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- Utilizador possui balcão -->
+    @if (dados.balcao) {
+
+    <div class="balcao-atual">
+
+      <!-- Número do balcão -->
+      <div class="balcao-numero">
+
+        <span>
+          Nº
+        </span>
+
+        <strong>
+          {{ dados.balcao.numero }}
+        </strong>
+
+      </div>
+
+
+      <!-- Nome do balcão -->
+      <div class="balcao-info">
+
+        <span class="dado-label">
+          Balcão atual
+        </span>
+
+        <h3>
+          {{ dados.balcao.nome }}
+        </h3>
+
+      </div>
+
+
+      <!-- Permite alterar o balcão -->
+      <button type="button" class="botao-secundario" (click)="abrirSelecaoBalcao()">
+        Alterar balcão
+      </button>
+
+    </div>
+
+    }
+
+
+    <!-- Utilizador não possui balcão -->
+    @else {
+
+    <div class="sem-balcao">
+
+      <div class="sem-balcao-icone">
+        !
+      </div>
+
+
+      <div>
+
+        <h3>
+          Nenhum balcão atribuído
+        </h3>
+
+        <p>
+          Não possui nenhum balcão atribuído
+          no momento.
+        </p>
+
+      </div>
+
+
+      <!-- Permite selecionar o primeiro balcão -->
+      <button type="button" class="botao-principal" (click)="abrirSelecaoBalcao()">
+        Selecionar balcão
+      </button>
+
+    </div>
+
+    }
+
+  </section>
+
+
+  <!-- ============================================ -->
+  <!-- SELEÇÃO DE BALCÃO -->
+  <!-- ============================================ -->
+
+  @if (mostrandoBalcoes) {
+
+  <section class="card">
+
+    <div class="card-cabecalho">
+
+      <div>
+
+        <span class="titulo-pequeno">
+          Atendimento
+        </span>
+
+        <h2>
+          Selecionar balcão
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- Carregando balcões -->
+    @if (carregandoBalcoes) {
+
+    <div class="estado">
+
+      <div class="loader"></div>
+
+      <p>
+        A carregar balcões...
+      </p>
+
+    </div>
+
+    }
+
+
+    <!-- Erro ao carregar balcões -->
+    @else if (erroBalcao) {
+
+    <div class="estado erro">
+
+      <p>
+        {{ erroBalcao }}
+      </p>
+
+    </div>
+
+    }
+
+
+    <!-- Nenhum balcão encontrado -->
+    @else if (balcoes.length === 0) {
+
+    <div class="estado">
+
+      <p>
+        Não existem balcões disponíveis.
+      </p>
+
+    </div>
+
+    }
+
+
+    <!-- Lista de balcões -->
+    @else {
+
+    <div class="lista-balcoes">
+
+      @for (balcao of balcoes; track balcao.id) {
+
+      <button type="button" class="balcao-opcao" (click)="selecionarBalcao(balcao.id)">
+
+        <!-- Número do balcão -->
+        <span class="balcao-opcao-numero">
+          Nº {{ balcao.numero }}
+        </span>
+
+
+        <!-- Nome do balcão -->
+        <span class="balcao-opcao-nome">
+          {{ balcao.nome }}
+        </span>
+
+      </button>
+
+      }
+
+    </div>
+
+    }
+
+  </section>
+
+  }
+
+</div>
+
+}
