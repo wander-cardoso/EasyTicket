@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\Request;
+use App\Requests\Request;
 use App\Models\Balcao;
 use App\Responses\JsonResponse;
 use App\Services\BalcaoService;
@@ -45,7 +45,6 @@ class BalcaoController
         }
     }
 
-
     // Seleciona o balcão para a sessão atual
     public function selecionar(Request $request): void
     {
@@ -54,19 +53,34 @@ class BalcaoController
             // Obtém os dados enviados pelo Angular
             $dados = $request->all();
 
+            // Obtém o ID do balcão enviado pelo Angular
             $balcaoId = (int) (
                 $dados['balcaoId'] ?? 0
             );
 
-            // Obtém os dados do JWT
+            // Valida o balcão informado
+            if ($balcaoId <= 0) {
+
+                JsonResponse::error(
+                    'Informe um balcão válido.',
+                    400
+                );
+
+                return;
+            }
+
+            // Obtém os dados do utilizador autenticado
             $dadosAutenticacao =
                 $request->utilizadorAutenticado();
 
+            // Obtém o ID do utilizador através do JWT
             $utilizadorId = (int) (
                 $dadosAutenticacao['sub'] ?? 0
             );
 
+            // Valida o utilizador autenticado
             if ($utilizadorId <= 0) {
+
                 JsonResponse::error(
                     'Utilizador autenticado inválido.',
                     401
@@ -80,17 +94,29 @@ class BalcaoController
                 $balcaoId
             );
 
+            if ($balcao === null) {
+
+                JsonResponse::error(
+                    'Balcão não encontrado.',
+                    404
+                );
+
+                return;
+            }
+
             // Gera um novo JWT contendo o balcão selecionado
-            $token = $this->authService->gerarTokenComBalcaoPorId(
-                $utilizadorId,
-                $balcaoId
-            );
+            $token =
+                $this->authService->gerarTokenComBalcaoPorId(
+                    $utilizadorId,
+                    $balcaoId
+                );
 
             // Retorna o novo token e os dados do balcão
             JsonResponse::success(
                 'Balcão selecionado com sucesso.',
                 [
                     'token' => $token,
+
                     'balcao' => [
                         'id' => $balcao->getId(),
                         'nome' => $balcao->getNome(),
@@ -98,16 +124,17 @@ class BalcaoController
                     ]
                 ]
             );
-
-            // Precisamos buscar o utilizador pelo ID
-            // para gerar o novo JWT
-            // ...
-
         } catch (InvalidArgumentException $exception) {
 
             JsonResponse::error(
                 $exception->getMessage(),
                 400
+            );
+        } catch (DatabaseException $exception) {
+
+            JsonResponse::error(
+                'Erro ao selecionar o balcão.',
+                500
             );
         }
     }

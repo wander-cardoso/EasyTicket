@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\Request;
+use App\Requests\Request;
 use App\Responses\JsonResponse;
 use App\Services\DashboardService;
 use App\Exceptions\DatabaseException;

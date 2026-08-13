@@ -1,0 +1,237 @@
+/* Área principal do Gestor */
+.gestor {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+
+/* Cabeçalho */
+.gestor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+
+/* Texto pequeno utilizado nos títulos */
+.titulo-pequeno {
+  display: block;
+  margin-bottom: 6px;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+
+/* Título principal */
+.gestor-header h1 {
+  margin: 0;
+
+  font-size: 2rem;
+}
+
+
+/* Descrição */
+.gestor-header p {
+  margin: 8px 0 0;
+}
+
+
+/* Área das funcionalidades */
+.gestor-conteudo {
+  padding: 28px;
+
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+
+/* Cabeçalho dos cards */
+.card-cabecalho {
+  margin-bottom: 24px;
+}
+
+
+/* Título da seção */
+.card-cabecalho h2 {
+  margin: 0;
+}
+
+
+/* Grid das opções */
+.gestao-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+
+/* Botão de funcionalidade */
+.gestao-opcao {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 16px;
+
+  width: 100%;
+  padding: 22px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+/* Efeito ao passar o rato */
+.gestao-opcao:hover {
+  transform: translateY(-2px);
+
+  border-color: #046a38;
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Ícone simples */
+.gestao-icone {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background: #046a38;
+  color: #ffffff;
+
+  font-weight: 700;
+}
+
+
+/* Conteúdo da opção */
+.gestao-conteudo {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+/* Nome da funcionalidade */
+.gestao-conteudo strong {
+  font-size: 1rem;
+}
+
+
+/* Descrição da funcionalidade */
+.gestao-conteudo small {
+  line-height: 1.5;
+}
+
+
+/* Área de sessão */
+.gestor-sessao {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-top: 24px;
+  padding: 24px;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+
+/* Título da sessão */
+.gestor-sessao h2 {
+  margin: 0;
+}
+
+
+/* Descrição da sessão */
+.gestor-sessao p {
+  margin: 8px 0 0;
+}
+
+
+/* Botões */
+.botao-secundario,
+.botao-perigo {
+  padding: 11px 18px;
+
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-weight: 600;
+}
+
+
+/* Botão secundário */
+.botao-secundario {
+  background: #e5e7eb;
+}
+
+
+/* Botão de perigo */
+.botao-perigo {
+  background: #b42318;
+  color: #ffffff;
+}
+
+
+/* Responsividade */
+@media (max-width: 800px) {
+
+  .gestor {
+    padding: 24px 16px;
+  }
+
+
+  .gestor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+
+  .gestao-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .gestor-sessao {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

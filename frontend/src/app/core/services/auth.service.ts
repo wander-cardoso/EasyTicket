@@ -1,19 +1,75 @@
-import { Injectable } from '@angular/core';
-import { JwtPayload } from '../../shared/interfaces/jwt-payload.interface';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
+
+import {
+  HttpClient
+} from '@angular/common/http';
+
+import {
+  Observable,
+  tap
+} from 'rxjs';
+
+import {
+  ApiResponse
+} from '../../shared/interfaces/api-response.interface';
+
+import {
+  LoginResponse
+} from '../../shared/interfaces/login-response.interface';
 
 
 @Injectable({
   providedIn: 'root'
 })
 
-// Centraliza o acesso e gerenciamento do token de autenticação
+// Centraliza a autenticação e o gerenciamento do JWT
 export class AuthService {
 
-  // Nome utilizado para armazenar o JWT no navegador
-  private readonly chaveToken = 'token';
+  // Disponibiliza o HttpClient
+  private readonly http = inject(
+    HttpClient
+  );
 
 
-  // Salva o JWT recebido pela API
+  // Endereço da API de autenticação
+  private readonly apiUrl =
+    'http://localhost:8000/api/login';
+
+
+  // Nome utilizado para armazenar o JWT
+  private readonly chaveToken =
+    'token';
+
+
+  // Realiza o login
+  login(
+    nomeUtilizador: string,
+    password: string
+  ): Observable<ApiResponse<LoginResponse>> {
+
+    return this.http.post<ApiResponse<LoginResponse>>(
+      this.apiUrl,
+      {
+        nomeUtilizador,
+        password
+      }
+    ).pipe(
+
+      tap((resposta) => {
+
+        this.salvarToken(
+          resposta.data.token
+        );
+
+      })
+    );
+  }
+
+
+  // Guarda o JWT
   salvarToken(token: string): void {
 
     localStorage.setItem(
@@ -23,7 +79,7 @@ export class AuthService {
   }
 
 
-  // Recupera o JWT armazenado
+  // Obtém o JWT
   obterToken(): string | null {
 
     return localStorage.getItem(
@@ -32,7 +88,7 @@ export class AuthService {
   }
 
 
-  // Remove o JWT armazenado
+  // Remove o JWT
   removerToken(): void {
 
     localStorage.removeItem(
@@ -41,103 +97,103 @@ export class AuthService {
   }
 
 
-  // Verifica apenas se existe um token armazenado
+  // Verifica se existe um JWT
   estaAutenticado(): boolean {
 
     return this.obterToken() !== null;
   }
 
 
-  // Lê e converte o payload do JWT
-  obterPayload(): JwtPayload | null {
+  // Obtém o perfil armazenado no JWT
+  obterPerfil(): string | null {
 
-    // Recupera o token armazenado
-    const token = this.obterToken();
+    const payload =
+      this.obterPayload();
 
-    // Se não existir token, não existe payload
+
+    if (!payload) {
+      return null;
+    }
+
+
+    return payload['perfil'] ?? null;
+  }
+
+
+  // Obtém o ID do balcão armazenado no JWT
+  obterBalcaoId(): number | null {
+
+    const payload =
+      this.obterPayload();
+
+
+    if (!payload) {
+      return null;
+    }
+
+
+    const balcaoId =
+      payload['balcaoId'];
+
+
+    if (
+      balcaoId === null ||
+      balcaoId === undefined
+    ) {
+      return null;
+    }
+
+
+    const numeroBalcaoId =
+      Number(balcaoId);
+
+
+    if (
+      !Number.isInteger(numeroBalcaoId) ||
+      numeroBalcaoId <= 0
+    ) {
+      return null;
+    }
+
+
+    return numeroBalcaoId;
+  }
+
+
+  // Obtém o Payload do JWT
+  private obterPayload(): Record<string, any> | null {
+
+    const token =
+      this.obterToken();
+
+
     if (!token) {
       return null;
     }
 
+
     try {
 
-      // Um JWT possui três partes:
-      // header.payload.signature
-      const partes = token.split('.');
+      const partes =
+        token.split('.');
 
-      // Verifica a estrutura básica do JWT
+
       if (partes.length !== 3) {
         return null;
       }
 
-      // Obtém somente a parte correspondente ao payload
-      const payloadBase64 = partes[1];
 
-      // Converte Base64URL para Base64 convencional
-      const payloadBase64Normalizado = payloadBase64
-        .replace(/-/g, '+')
-        .replace(/_/g, '/');
+      const payloadJson =
+        atob(partes[1]);
 
-      // Decodifica o Base64
-      const payloadJson = atob(
-        payloadBase64Normalizado
+
+      return JSON.parse(
+        payloadJson
       );
-
-      // Converte o JSON para objeto JavaScript
-      return JSON.parse(payloadJson) as JwtPayload;
 
     } catch {
 
-      // Retorna null caso o token esteja malformado
       return null;
     }
-  }
-
-
-  // Obtém o ID do utilizador autenticado
-  obterUtilizadorId(): number | null {
-
-    // Obtém o payload do JWT
-    const payload = this.obterPayload();
-
-    // Verifica se o ID existe
-    if (!payload) {
-      return null;
-    }
-
-    // Retorna o ID do utilizador
-    return payload.sub;
-  }
-
-
-  // Obtém o perfil do utilizador autenticado
-  obterPerfil(): string | null {
-
-    // Obtém o payload do JWT
-    const payload = this.obterPayload();
-
-    // Verifica se o payload existe
-    if (!payload) {
-      return null;
-    }
-
-    // Retorna o perfil do utilizador
-    return payload.perfil;
-  }
-
-
-  // Obtém o ID do balcão atualmente selecionado
-  obterBalcaoId(): number | null {
-
-    // Obtém o payload do JWT
-    const payload = this.obterPayload();
-
-    // Se não existir payload ou balcão, retorna null
-    if (!payload || payload.balcaoId === undefined) {
-      return null;
-    }
-
-    // Retorna o ID do balcão
-    return payload.balcaoId;
   }
 }

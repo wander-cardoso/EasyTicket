@@ -80,7 +80,6 @@ class SenhaRepository extends BaseRepository implements SenhaRepositoryInterface
             }
 
             return $senhas;
-
         } catch (PDOException $exception) {
 
             throw new DatabaseException(
@@ -144,7 +143,6 @@ class SenhaRepository extends BaseRepository implements SenhaRepositoryInterface
                 $registo['data_inicio_atendimento'],
                 $registo['data_finalizacao']
             );
-
         } catch (PDOException $exception) {
 
             throw new DatabaseException(
@@ -180,7 +178,6 @@ class SenhaRepository extends BaseRepository implements SenhaRepositoryInterface
             $quantidade = (int) $statement->fetchColumn();
 
             return $quantidade > 0;
-
         } catch (PDOException $exception) {
 
             throw new DatabaseException(
@@ -191,16 +188,16 @@ class SenhaRepository extends BaseRepository implements SenhaRepositoryInterface
         }
     }
 
-// Emite uma nova senha
-public function emitirSenha(Senha $senha): Senha
-{
-    try {
+    // Emite uma nova senha
+    public function emitirSenha(Senha $senha): Senha
+    {
+        try {
 
-        // Inicia a transação
-        $this->connection->beginTransaction();
+            // Inicia a transação
+            $this->connection->beginTransaction();
 
-        // Busca a sigla do tipo de atendimento
-        $sql = "
+            // Busca a sigla do tipo de atendimento
+            $sql = "
             SELECT
                 sigla
             FROM tipos_atendimento
@@ -208,30 +205,30 @@ public function emitirSenha(Senha $senha): Senha
             FOR UPDATE
         ";
 
-        // Prepara a query
-        $statement = $this->connection->prepare($sql);
+            // Prepara a query
+            $statement = $this->connection->prepare($sql);
 
-        // Executa o SELECT
-        $statement->execute([
-            ':tipo_atendimento_id' => $senha->getTipoAtendimentoId()
-        ]);
+            // Executa o SELECT
+            $statement->execute([
+                ':tipo_atendimento_id' => $senha->getTipoAtendimentoId()
+            ]);
 
-        // Obtém o tipo de atendimento
-        $tipoAtendimento = $statement->fetch(PDO::FETCH_ASSOC);
+            // Obtém o tipo de atendimento
+            $tipoAtendimento = $statement->fetch(PDO::FETCH_ASSOC);
 
-        // Tipo de atendimento não encontrado
-        if (!$tipoAtendimento) {
+            // Tipo de atendimento não encontrado
+            if (!$tipoAtendimento) {
 
-            throw new DatabaseException(
-                'Tipo de atendimento não encontrado.'
-            );
-        }
+                throw new DatabaseException(
+                    'Tipo de atendimento não encontrado.'
+                );
+            }
 
-        // Obtém a sigla
-        $sigla = $tipoAtendimento['sigla'];
+            // Obtém a sigla
+            $sigla = $tipoAtendimento['sigla'];
 
-        // Busca o último código emitido para esse tipo
-        $sql = "
+            // Busca o último código emitido para esse tipo
+            $sql = "
             SELECT codigo
             FROM senhas
             WHERE tipo_atendimento_id = :tipo_atendimento_id
@@ -239,46 +236,45 @@ public function emitirSenha(Senha $senha): Senha
             LIMIT 1
         ";
 
-        // Prepara a query
-        $statement = $this->connection->prepare($sql);
+            // Prepara a query
+            $statement = $this->connection->prepare($sql);
 
-        // Executa o SELECT
-        $statement->execute([
-            ':tipo_atendimento_id' => $senha->getTipoAtendimentoId()
-        ]);
+            // Executa o SELECT
+            $statement->execute([
+                ':tipo_atendimento_id' => $senha->getTipoAtendimentoId()
+            ]);
 
-        // Obtém o último código
-        $ultimoCodigo = $statement->fetchColumn();
+            // Obtém o último código
+            $ultimoCodigo = $statement->fetchColumn();
 
-        // Define o próximo número
-        if ($ultimoCodigo === false) {
+            // Define o próximo número
+            if ($ultimoCodigo === false) {
 
-            $proximoNumero = 1;
+                $proximoNumero = 1;
+            } else {
 
-        } else {
+                // Remove a sigla e mantém apenas o número
+                $numero = (int) substr(
+                    $ultimoCodigo,
+                    strlen($sigla)
+                );
 
-            // Remove a sigla e mantém apenas o número
-            $numero = (int) substr(
-                $ultimoCodigo,
-                strlen($sigla)
+                $proximoNumero = $numero + 1;
+            }
+
+            // Gera o código
+            $codigo = $sigla . str_pad(
+                (string) $proximoNumero,
+                3,
+                '0',
+                STR_PAD_LEFT
             );
 
-            $proximoNumero = $numero + 1;
-        }
+            // Define a data e hora da emissão
+            $dataEmissao = date('Y-m-d H:i:s');
 
-        // Gera o código
-        $codigo = $sigla . str_pad(
-            (string) $proximoNumero,
-            3,
-            '0',
-            STR_PAD_LEFT
-        );
-
-        // Define a data e hora da emissão
-        $dataEmissao = date('Y-m-d H:i:s');
-
-        // Insere a senha
-        $sql = "
+            // Insere a senha
+            $sql = "
             INSERT INTO senhas (
                 codigo,
                 nome_cliente,
@@ -299,68 +295,67 @@ public function emitirSenha(Senha $senha): Senha
             )
         ";
 
-        // Prepara o INSERT
-        $statement = $this->connection->prepare($sql);
+            // Prepara o INSERT
+            $statement = $this->connection->prepare($sql);
 
-        // Executa o INSERT
-        $statement->execute([
-            ':codigo' => $codigo,
-            ':nome_cliente' => $senha->getNomeCliente(),
-            ':telefone_contacto' => $senha->getTelefoneContacto(),
-            ':tipo_atendimento_id' => $senha->getTipoAtendimentoId(),
-            ':data_emissao' => $dataEmissao
-        ]);
+            // Executa o INSERT
+            $statement->execute([
+                ':codigo' => $codigo,
+                ':nome_cliente' => $senha->getNomeCliente(),
+                ':telefone_contacto' => $senha->getTelefoneContacto(),
+                ':tipo_atendimento_id' => $senha->getTipoAtendimentoId(),
+                ':data_emissao' => $dataEmissao
+            ]);
 
-        // Obtém o ID gerado pelo banco
-        $id = (int) $this->connection->lastInsertId();
+            // Obtém o ID gerado pelo banco
+            $id = (int) $this->connection->lastInsertId();
 
-        // Cria a senha completa que foi emitida
-        $senhaEmitida = new Senha(
-            $id,
-            $codigo,
-            $senha->getNomeCliente(),
-            $senha->getTelefoneContacto(),
-            $senha->getTipoAtendimentoId(),
-            null,
-            'emitida',
-            $dataEmissao,
-            null,
-            null,
-            null
-        );
+            // Cria a senha completa que foi emitida
+            $senhaEmitida = new Senha(
+                $id,
+                $codigo,
+                $senha->getNomeCliente(),
+                $senha->getTelefoneContacto(),
+                $senha->getTipoAtendimentoId(),
+                null,
+                'emitida',
+                $dataEmissao,
+                null,
+                null,
+                null
+            );
 
-        // Confirma a transação
-        $this->connection->commit();
+            // Confirma a transação
+            $this->connection->commit();
 
-        // Retorna a senha emitida
-        return $senhaEmitida;
+            // Retorna a senha emitida
+            return $senhaEmitida;
+        } catch (PDOException $exception) {
 
-    } catch (PDOException $exception) {
+            // Desfaz a transação caso tenha ocorrido algum erro
+            if ($this->connection->inTransaction()) {
+                $this->connection->rollBack();
+            }
 
-        // Desfaz a transação caso tenha ocorrido algum erro
-        if ($this->connection->inTransaction()) {
-            $this->connection->rollBack();
+            throw new DatabaseException(
+                'Erro ao emitir a senha.',
+                0,
+                $exception
+            );
+        } catch (DatabaseException $exception) {
+
+            // Desfaz a transação caso tenha ocorrido algum erro
+            if ($this->connection->inTransaction()) {
+                $this->connection->rollBack();
+            }
+
+            throw $exception;
         }
-
-        throw new DatabaseException(
-            'Erro ao emitir a senha.',
-            0,
-            $exception
-        );
-
-    } catch (DatabaseException $exception) {
-
-        // Desfaz a transação caso tenha ocorrido algum erro
-        if ($this->connection->inTransaction()) {
-            $this->connection->rollBack();
-        }
-
-        throw $exception;
     }
-}
 
     // Registra a chamada de uma senha
-    public function chamarProxima( int $balcaoId ): ?Senha {
+    public function chamarProxima(int $balcaoId, int $tipoAtendimentoId): ?Senha
+    {
         try {
 
             // Inicia a transação
@@ -381,7 +376,7 @@ public function emitirSenha(Senha $senha): Senha
                     data_inicio_atendimento,
                     data_finalizacao
                 FROM senhas
-                WHERE status = 'emitida'
+                WHERE status = 'emitida' AND tipo_atendimento_id = :tipo_atendimento_id
                 ORDER BY data_emissao ASC
                 LIMIT 1
                 FOR UPDATE
@@ -391,7 +386,9 @@ public function emitirSenha(Senha $senha): Senha
             $statement = $this->connection->prepare($sql);
 
             // Executa o SELECT
-            $statement->execute();
+            $statement->execute([
+                ':tipo_atendimento_id' => $tipoAtendimentoId
+            ]);
 
             // Obtém a próxima senha
             $registo = $statement->fetch(PDO::FETCH_ASSOC);
@@ -439,7 +436,6 @@ public function emitirSenha(Senha $senha): Senha
                 $registo['data_inicio_atendimento'],
                 $registo['data_finalizacao']
             );
-
         } catch (PDOException $exception) {
 
             if ($this->connection->inTransaction()) {
@@ -455,29 +451,31 @@ public function emitirSenha(Senha $senha): Senha
     }
 
     // Inicia o atendimento de uma senha
-    public function iniciarAtendimento( string $codigo ): bool {
+    public function iniciarAtendimento(
+        string $codigo,
+        int $balcaoId
+    ): bool {
+
         try {
 
-            // SQL responsável por iniciar o atendimento
             $sql = "
-                UPDATE senhas
-                SET
-                    status = 'em_atendimento',
-                    data_inicio_atendimento = NOW()
-                WHERE codigo = :codigo
-                AND status = 'chamada'
-            ";
+            UPDATE senhas
+            SET
+                status = 'em_atendimento',
+                data_inicio_atendimento = NOW()
+            WHERE codigo = :codigo
+            AND balcao_id = :balcao_id
+            AND status = 'chamada'
+        ";
 
-            // Prepara a query
             $statement = $this->connection->prepare($sql);
 
-            // Executa o UPDATE
             $statement->execute([
-                ':codigo' => $codigo
+                ':codigo' => $codigo,
+                ':balcao_id' => $balcaoId
             ]);
 
             return $statement->rowCount() > 0;
-
         } catch (PDOException $exception) {
 
             throw new DatabaseException(
@@ -489,37 +487,44 @@ public function emitirSenha(Senha $senha): Senha
     }
 
     // Finaliza o atendimento de uma senha
-public function finalizarAtendimento( string $codigo ): bool {
-    try {
+    public function finalizarAtendimento(
+        string $codigo,
+        int $balcaoId,
+        ?string $nomeCliente,
+        ?string $telefoneContacto
+    ): bool {
 
-        // SQL responsável por finalizar o atendimento
-        $sql = "
+        try {
+
+            $sql = "
             UPDATE senhas
             SET
+                nome_cliente = :nome_cliente,
+                telefone_contacto = :telefone_contacto,
                 status = 'finalizada',
                 data_finalizacao = NOW()
             WHERE codigo = :codigo
+            AND balcao_id = :balcao_id
             AND status = 'em_atendimento'
         ";
 
-        // Prepara a query
-        $statement = $this->connection->prepare($sql);
+            $statement = $this->connection->prepare($sql);
 
-        // Executa o UPDATE
-        $statement->execute([
-            ':codigo' => $codigo
-        ]);
+            $statement->execute([
+                ':codigo' => $codigo,
+                ':balcao_id' => $balcaoId,
+                ':nome_cliente' => $nomeCliente,
+                ':telefone_contacto' => $telefoneContacto
+            ]);
 
-        // Verifica se alguma senha foi atualizada
-        return $statement->rowCount() > 0;
+            return $statement->rowCount() > 0;
+        } catch (PDOException $exception) {
 
-    } catch (PDOException $exception) {
-
-        throw new DatabaseException(
-            'Erro ao finalizar o atendimento.',
-            0,
-            $exception
-        );
+            throw new DatabaseException(
+                'Erro ao finalizar o atendimento.',
+                0,
+                $exception
+            );
+        }
     }
-}
 }

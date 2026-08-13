@@ -1,14 +1,7 @@
 <?php
-
 namespace App\Controllers;
 
-use App\Core\Request;
-use App\Models\TipoAtendimento;
-use App\Responses\JsonResponse;
-
-namespace App\Controllers;
-
-use App\Core\Request;
+use App\Requests\Request;
 use App\Models\TipoAtendimento;
 use App\Responses\JsonResponse;
 use App\Services\TipoAtendimentoService;

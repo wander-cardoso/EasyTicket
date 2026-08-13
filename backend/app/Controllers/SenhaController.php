@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\Request;
+use App\Requests\Request;
 use App\Models\Senha;
 use App\Responses\JsonResponse;
 use App\Services\SenhaService;
@@ -118,16 +118,41 @@ class SenhaController
         }
     }
 
-    // Chama a próxima senha
+    // Chama a próxima senha compatível com o balcão do utilizador
     public function chamarProxima(Request $request): void
     {
         try {
 
-            $balcaoId = $request->input('balcaoId');
+            // Obtém os dados do utilizador autenticado
+            $utilizador =
+                $request->utilizadorAutenticado();
 
-            $senha = $this->service->chamarProxima(
-                $balcaoId
-            );
+
+            // Obtém o ID do balcão através do JWT
+            $balcaoId =
+                isset($utilizador['balcaoId'])
+                ? (int) $utilizador['balcaoId']
+                : 0;
+
+
+            // Verifica se o utilizador possui um balcão
+            if ($balcaoId <= 0) {
+
+                JsonResponse::error(
+                    'Nenhum balcão está associado ao utilizador.',
+                    400
+                );
+
+                return;
+            }
+
+
+            // Solicita ao Service a próxima senha
+            $senha =
+                $this->service->chamarProxima(
+                    $balcaoId
+                );
+
 
             JsonResponse::success(
                 'Senha chamada com sucesso.',
@@ -149,19 +174,54 @@ class SenhaController
     }
 
     // Inicia o atendimento de uma senha
-    public function iniciarAtendimento(Request $request): void
-    {
+    public function iniciarAtendimento(
+        Request $request
+    ): void {
+
         try {
 
-            $id = $request->input('id');
+            // Obtém o código enviado pelo Angular
+            $codigo = $request->input('codigo');
 
-            $senha = $this->service->iniciarAtendimento(
-                $id
-            );
+            if (!is_string($codigo) || trim($codigo) === '') {
+                JsonResponse::error(
+                    'Informe o código da senha.',
+                    400
+                );
+
+                return;
+            }
+
+            // Obtém o utilizador autenticado através do JWT
+            $utilizador =
+                $request->utilizadorAutenticado();
+
+            // Obtém o balcão associado ao utilizador
+            $balcaoId = isset($utilizador['balcaoId'])
+                ? (int) $utilizador['balcaoId']
+                : 0;
+
+            // Verifica se existe balcão associado
+            if ($balcaoId <= 0) {
+
+                JsonResponse::error(
+                    'Nenhum balcão está associado ao utilizador.',
+                    400
+                );
+
+                return;
+            }
+
+            // Envia apenas os dados necessários para o Service
+            $sucesso =
+                $this->service->iniciarAtendimento(
+                    (string) $codigo,
+                    $balcaoId
+                );
 
             JsonResponse::success(
                 'Atendimento iniciado com sucesso.',
-                $senha
+                $sucesso
             );
         } catch (InvalidArgumentException $exception) {
 
@@ -178,20 +238,66 @@ class SenhaController
         }
     }
 
+
     // Finaliza o atendimento de uma senha
-    public function finalizarAtendimento(Request $request): void
-    {
+    public function finalizarAtendimento(
+        Request $request
+    ): void {
+
         try {
 
-            $id = $request->input('id');
+            // Obtém os dados enviados pelo Angular
+            $codigo = $request->input('codigo');
 
-            $senha = $this->service->finalizarAtendimento(
-                $id
-            );
+
+
+            if (!is_string($codigo) || trim($codigo) === '') {
+                JsonResponse::error(
+                    'Informe o código da senha.',
+                    400
+                );
+
+                return;
+            }
+
+            $nomeCliente =
+                $request->input('nomeCliente');
+
+            $telefoneContacto =
+                $request->input('telefoneContacto');
+
+            // Obtém o utilizador autenticado
+            $utilizador =
+                $request->utilizadorAutenticado();
+
+            // Obtém o balcão através do JWT
+            $balcaoId = isset($utilizador['balcaoId'])
+                ? (int) $utilizador['balcaoId']
+                : 0;
+
+            // Verifica se existe balcão
+            if ($balcaoId <= 0) {
+
+                JsonResponse::error(
+                    'Nenhum balcão está associado ao utilizador.',
+                    400
+                );
+
+                return;
+            }
+
+            // Envia os dados para o Service
+            $sucesso =
+                $this->service->finalizarAtendimento(
+                    (string) $codigo,
+                    $balcaoId,
+                    $nomeCliente,
+                    $telefoneContacto
+                );
 
             JsonResponse::success(
                 'Atendimento finalizado com sucesso.',
-                $senha
+                $sucesso
             );
         } catch (InvalidArgumentException $exception) {
 

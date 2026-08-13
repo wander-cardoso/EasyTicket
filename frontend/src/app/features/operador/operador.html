@@ -1,1 +1,497 @@
-<p>operador works!</p>
+<!-- Área principal do Operador -->
+<main class="operador">
+
+  <!-- ================================================= -->
+  <!-- CABEÇALHO -->
+  <!-- ================================================= -->
+
+  <header class="operador-header">
+
+    <div>
+
+      <span class="titulo-pequeno">
+        Operação
+      </span>
+
+      <h1>
+        Atendimento
+      </h1>
+
+      <p>
+        Gerencie o atendimento das senhas do seu balcão.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="botao-secundario"
+      (click)="voltarDashboard()"
+    >
+      Voltar ao Dashboard
+    </button>
+
+  </header>
+
+
+  <!-- ================================================= -->
+  <!-- MENSAGENS -->
+  <!-- ================================================= -->
+
+  @if (mensagem) {
+
+    <div class="mensagem sucesso">
+      {{ mensagem }}
+    </div>
+
+  }
+
+
+  @if (erro) {
+
+    <div class="mensagem erro">
+      {{ erro }}
+    </div>
+
+  }
+
+
+  <!-- ================================================= -->
+  <!-- SELEÇÃO DE BALCÃO -->
+  <!-- ================================================= -->
+
+  @if (mostrandoBalcoes) {
+
+    <section class="selecao-balcao">
+
+      <div class="selecao-balcao-header">
+
+        <span class="titulo-pequeno">
+          Balcão
+        </span>
+
+        <h2>
+          Selecione o seu balcão
+        </h2>
+
+        <p>
+          Escolha o balcão onde pretende realizar os atendimentos.
+        </p>
+
+      </div>
+
+
+      @if (carregandoBalcoes) {
+
+        <div class="estado-balcao">
+
+          <p>
+            A carregar balcões...
+          </p>
+
+        </div>
+
+      }
+
+      @else if (balcoes.length === 0) {
+
+        <div class="estado-balcao">
+
+          <p>
+            Não existem balcões disponíveis.
+          </p>
+
+        </div>
+
+      }
+
+      @else {
+
+        <div class="lista-balcoes">
+
+          @for (
+            balcao of balcoes;
+            track balcao.id
+          ) {
+
+            <button
+              type="button"
+              class="balcao"
+              [disabled]="carregandoBalcoes"
+              (click)="selecionarBalcao(balcao.id)"
+            >
+
+              <strong>
+                Balcão {{ balcao.numero }}
+              </strong>
+
+              <span>
+                {{ balcao.nome }}
+              </span>
+
+            </button>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+
+  <!-- ================================================= -->
+  <!-- ATENDIMENTO ATUAL -->
+  <!-- ================================================= -->
+
+  @if (!mostrandoBalcoes) {
+
+    <section class="senha-atual">
+
+      <span class="titulo-pequeno">
+        Atendimento atual
+      </span>
+
+
+      <!-- ================================================= -->
+      <!-- EXISTE UMA SENHA -->
+      <!-- ================================================= -->
+
+      @if (senhaAtual) {
+
+        <!-- Identificação -->
+        <div class="senha-destaque">
+
+          <span class="senha-label">
+            Senha chamada
+          </span>
+
+          <strong class="senha-codigo">
+            {{ senhaAtual.codigo }}
+          </strong>
+
+          <span class="senha-status">
+            {{ senhaAtual.status }}
+          </span>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- SENHA CHAMADA -->
+        <!-- ================================================= -->
+
+        @if (senhaAtual.status === 'chamada') {
+
+          <div class="informacao-atendimento">
+
+            <h2>
+              Senha chamada
+            </h2>
+
+            <p>
+              A senha foi chamada para este balcão.
+              Inicie o atendimento quando estiver pronto.
+            </p>
+
+          </div>
+
+
+          <div class="acoes-senha">
+
+            <button
+              type="button"
+              class="botao-principal"
+              [disabled]="carregando"
+              (click)="iniciarAtendimento()"
+            >
+
+              @if (carregando) {
+                A iniciar...
+              }
+
+              @else {
+                Iniciar atendimento
+              }
+
+            </button>
+
+          </div>
+
+        }
+
+
+        <!-- ================================================= -->
+        <!-- EM ATENDIMENTO -->
+        <!-- ================================================= -->
+
+        @if (senhaAtual.status === 'em_atendimento') {
+
+          <div class="informacao-atendimento">
+
+            <h2>
+              Atendimento em andamento
+            </h2>
+
+            <p>
+              Preencha os dados do cliente, caso estejam disponíveis.
+            </p>
+
+          </div>
+
+
+          <!-- Dados do cliente -->
+          <div class="dados-cliente-form">
+
+            <div class="campo">
+
+              <label for="nomeCliente">
+                Nome do cliente
+              </label>
+
+              <input
+                id="nomeCliente"
+                type="text"
+                [(ngModel)]="nomeCliente"
+                placeholder="Nome do cliente"
+                [disabled]="carregando"
+              />
+
+            </div>
+
+
+            <div class="campo">
+
+              <label for="telefoneContacto">
+                Telefone
+              </label>
+
+              <input
+                id="telefoneContacto"
+                type="text"
+                [(ngModel)]="telefoneContacto"
+                placeholder="Telefone de contacto"
+                [disabled]="carregando"
+              />
+
+            </div>
+
+          </div>
+
+
+          <!-- Finalizar -->
+          <div class="acoes-senha">
+
+            <button
+              type="button"
+              class="botao-principal"
+              [disabled]="carregando"
+              (click)="finalizarAtendimento()"
+            >
+
+              @if (carregando) {
+                A finalizar...
+              }
+
+              @else {
+                Finalizar atendimento
+              }
+
+            </button>
+
+          </div>
+
+        }
+
+
+        <!-- ================================================= -->
+        <!-- FINALIZADA -->
+        <!-- ================================================= -->
+
+        @if (senhaAtual.status === 'finalizada') {
+
+          <div class="informacao-atendimento">
+
+            <h2>
+              Atendimento finalizado
+            </h2>
+
+            <p>
+              O atendimento foi concluído com sucesso.
+            </p>
+
+          </div>
+
+
+          <div class="senha-dados">
+
+            <div>
+
+              <span>
+                Cliente
+              </span>
+
+              <strong>
+                {{ senhaAtual.nomeCliente || 'Não informado' }}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Telefone
+              </span>
+
+              <strong>
+                {{ senhaAtual.telefoneContacto || 'Não informado' }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        }
+
+      }
+
+
+      <!-- ================================================= -->
+      <!-- NENHUMA SENHA -->
+      <!-- ================================================= -->
+
+      @else {
+
+        <div class="sem-senha">
+
+          <h2>
+            Nenhuma senha em atendimento
+          </h2>
+
+          <p>
+            Clique no botão abaixo para chamar a próxima senha.
+          </p>
+
+        </div>
+
+      }
+
+
+      <!-- ================================================= -->
+      <!-- CHAMAR PRÓXIMA -->
+      <!-- ================================================= -->
+
+      @if (
+        !senhaAtual ||
+        senhaAtual.status === 'finalizada'
+      ) {
+
+        <button
+          type="button"
+          class="botao-principal botao-chamar"
+          [disabled]="carregando"
+          (click)="chamarProxima()"
+        >
+
+          @if (carregando) {
+            A procurar senha...
+          }
+
+          @else {
+            Chamar próxima senha
+          }
+
+        </button>
+
+      }
+
+    </section>
+
+  }
+
+
+  <!-- ================================================= -->
+  <!-- CONSULTA -->
+  <!-- ================================================= -->
+
+  <section class="consulta">
+
+    <div>
+
+      <span class="titulo-pequeno">
+        Consulta
+      </span>
+
+      <h2>
+        Consultar senha
+      </h2>
+
+      <p>
+        Consulte o estado de uma senha através do código.
+      </p>
+
+    </div>
+
+
+    <div class="consulta-form">
+
+      <input
+        #codigoSenha
+        type="text"
+        placeholder="Ex.: A001"
+        [disabled]="carregando"
+      />
+
+
+      <button
+        type="button"
+        class="botao-secundario"
+        [disabled]="carregando"
+        (click)="consultarSenha(codigoSenha.value)"
+      >
+        Consultar
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================================================= -->
+  <!-- SESSÃO -->
+  <!-- ================================================= -->
+
+  <section class="operador-sessao">
+
+    <div>
+
+      <span class="titulo-pequeno">
+        Sessão
+      </span>
+
+      <h2>
+        Sair da aplicação
+      </h2>
+
+      <p>
+        Termine a sessão neste dispositivo.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="botao-perigo"
+      (click)="sair()"
+    >
+      Terminar sessão
+    </button>
+
+  </section>
+
+</main>

@@ -1,0 +1,109 @@
+<main class="login-container">
+
+  <!-- Cartão principal do formulário de login -->
+  <section class="login-card">
+
+    <!-- Cabeçalho da tela -->
+    <header class="login-header">
+
+      <span class="titulo-pequeno">
+        EasyTicket
+      </span>
+
+      <h1>
+        Entrar
+      </h1>
+
+      <p>
+        Aceda à sua conta para continuar.
+      </p>
+
+    </header>
+
+
+    <!-- Formulário de autenticação -->
+    <form
+      class="login-form"
+      (ngSubmit)="entrar()"
+    >
+
+      <!-- Campo do nome de utilizador -->
+      <div class="campo">
+
+        <label for="nomeUtilizador">
+          Nome de utilizador
+        </label>
+
+        <input
+          id="nomeUtilizador"
+          name="nomeUtilizador"
+          type="text"
+          [(ngModel)]="nomeUtilizador"
+          placeholder="Digite o seu nome de utilizador"
+          autocomplete="username"
+        >
+
+      </div>
+
+
+      <!-- Campo da password -->
+      <div class="campo">
+
+        <label for="password">
+          Password
+        </label>
+
+        <input
+          id="password"
+          name="password"
+          type="password"
+          [(ngModel)]="password"
+          placeholder="Digite a sua password"
+          autocomplete="current-password"
+        >
+
+      </div>
+
+
+      <!-- Mensagem de erro -->
+      @if (erro) {
+
+        <div class="mensagem-erro">
+
+          {{ erro }}
+
+        </div>
+
+      }
+
+
+      <!-- Botão de login -->
+      <button
+        type="submit"
+        class="botao-login"
+        [disabled]="carregando"
+      >
+
+        @if (carregando) {
+
+          <span>
+            A entrar...
+          </span>
+
+        }
+
+        @else {
+
+          <span>
+            Entrar
+          </span>
+
+        }
+
+      </button>
+
+    </form>
+
+  </section>
+
+</main>

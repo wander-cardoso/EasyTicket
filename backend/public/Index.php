@@ -6,8 +6,8 @@ header('Access-Control-Allow-Origin: http://localhost:4200');
 // Permite os métodos HTTP utilizados pela API
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
-// Permite o envio do cabeçalho Content-Type
-header('Access-Control-Allow-Headers: Content-Type');
+// Permite os cabeçalhos utilizados pela API
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 // Trata requisições de verificação do navegador
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -19,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use App\Core\Application;
-use App\Core\Request;
+use App\Requests\Request;
+
 use function App\Routes\registerRoutes;
 
 

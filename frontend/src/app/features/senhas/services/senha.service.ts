@@ -1,46 +1,101 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
 
-import { Senha } from '../../../shared/models/senha.model';
-import { ApiResponse } from '../../../shared/interfaces/api-response.interface';
+import {
+  HttpClient
+} from '@angular/common/http';
 
-@Injectable({ providedIn: 'root' })
+import {
+  Observable
+} from 'rxjs';
+
+import {
+  ApiResponse
+} from '../../../shared/interfaces/api-response.interface';
+
+import {
+  Senha
+} from '../../../shared/models/senha.model';
+
+
+@Injectable({
+  providedIn: 'root'
+})
+
+// Centraliza a comunicação da aplicação com a API de Senhas
 export class SenhaService {
-  // Disponibiliza o HttpClient para realizar requisições HTTP
+
   private readonly http = inject(HttpClient);
 
-  // Endereço da API responsável pelas senhas
-  private readonly apiUrl = 'http://localhost:8000/api/senhas';
+  private readonly apiUrl =
+    'http://localhost:8000/api/senhas';
 
-  // Emite uma nova senha através da API
-  emitirSenha(
-    tipoAtendimentoId: number,
-    nomeCliente?: string,
-    telefoneContacto?: string,
+
+  // Consulta uma senha através do código
+  consultar(
+    codigo: string
   ): Observable<ApiResponse<Senha>> {
-    const dados = { tipoAtendimentoId, nomeCliente, telefoneContacto };
 
-    return this.http.post<ApiResponse<Senha>>(this.apiUrl, dados);
+    return this.http.get<ApiResponse<Senha>>(
+      `${this.apiUrl}/${codigo}`
+    );
   }
 
-  // Consulta uma senha pelo código
-  consultarPorCodigo(codigo: string): Observable<ApiResponse<Senha>> {
-    return this.http.get<ApiResponse<Senha>>(`${this.apiUrl}/${codigo}`);
+
+  // Emite uma nova senha
+  emitirSenha(
+    tipoAtendimentoId: number
+  ): Observable<ApiResponse<Senha>> {
+
+    return this.http.post<ApiResponse<Senha>>(
+      this.apiUrl,
+      {
+        tipoAtendimentoId
+      }
+    );
   }
 
-  // Chama a próxima senha para um balcão
-  chamarProxima(balcaoId: number): Observable<ApiResponse<Senha>> {
-    return this.http.post<ApiResponse<Senha>>(`${this.apiUrl}/chamar-proxima`, { balcaoId });
+
+  // Chama a próxima senha
+  chamarProxima(): Observable<ApiResponse<Senha>> {
+
+    return this.http.post<ApiResponse<Senha>>(
+      `${this.apiUrl}/chamar-proxima`,
+      {}
+    );
   }
 
-  // Inicia o atendimento de uma senha
-  iniciarAtendimento(codigo: string): Observable<ApiResponse<Senha>> {
-    return this.http.post<ApiResponse<Senha>>(`${this.apiUrl}/iniciar-atendimento`, { codigo });
+
+  // Inicia o atendimento
+  iniciarAtendimento(
+    codigo: string
+  ): Observable<ApiResponse<boolean>> {
+
+    return this.http.post<ApiResponse<boolean>>(
+      `${this.apiUrl}/iniciar-atendimento`,
+      {
+        codigo
+      }
+    );
   }
 
-  // Finaliza o atendimento de uma senha
-  finalizarAtendimento(codigo: string): Observable<ApiResponse<Senha>> {
-    return this.http.post<ApiResponse<Senha>>(`${this.apiUrl}/finalizar-atendimento`, { codigo });
+
+  // Finaliza o atendimento
+  finalizarAtendimento(
+    codigo: string,
+    nomeCliente: string,
+    telefoneContacto: string
+  ): Observable<ApiResponse<boolean>> {
+
+    return this.http.post<ApiResponse<boolean>>(
+      `${this.apiUrl}/finalizar-atendimento`,
+      {
+        codigo,
+        nomeCliente,
+        telefoneContacto
+      }
+    );
   }
 }

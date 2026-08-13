@@ -1,1 +1,173 @@
-<p>gestor works!</p>
+<!-- Área principal do Gestor -->
+<main class="gestor">
+
+  <!-- Cabeçalho -->
+  <header class="gestor-header">
+
+    <div>
+
+      <span class="titulo-pequeno">
+        Administração
+      </span>
+
+      <h1>
+        Área do Gestor
+      </h1>
+
+      <p>
+        Gerencie os recursos e configurações da aplicação.
+      </p>
+
+    </div>
+
+
+    <!-- Volta para o Dashboard -->
+    <button
+      type="button"
+      class="botao-secundario"
+      (click)="voltarDashboard()"
+    >
+      Voltar ao Dashboard
+    </button>
+
+  </header>
+
+
+  <!-- Funcionalidades disponíveis -->
+  <section class="gestor-conteudo">
+
+    <div class="card-cabecalho">
+
+      <div>
+
+        <span class="titulo-pequeno">
+          Gestão
+        </span>
+
+        <h2>
+          Funcionalidades
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- Opções de gestão -->
+    <div class="gestao-grid">
+
+
+      <!-- Gestão de utilizadores -->
+      <button
+        type="button"
+        class="gestao-opcao"
+        (click)="gerirUtilizadores()"
+      >
+
+        <span class="gestao-icone">
+          U
+        </span>
+
+        <span class="gestao-conteudo">
+
+          <strong>
+            Utilizadores
+          </strong>
+
+          <small>
+            Criar, consultar, editar e gerir utilizadores.
+          </small>
+
+        </span>
+
+      </button>
+
+
+      <!-- Gestão de balcões -->
+      <button
+        type="button"
+        class="gestao-opcao"
+        (click)="gerirBalcoes()"
+      >
+
+        <span class="gestao-icone">
+          B
+        </span>
+
+        <span class="gestao-conteudo">
+
+          <strong>
+            Balcões
+          </strong>
+
+          <small>
+            Criar, consultar, editar e remover balcões.
+          </small>
+
+        </span>
+
+      </button>
+
+
+      <!-- Gestão de tipos de atendimento -->
+      <button
+        type="button"
+        class="gestao-opcao"
+        (click)="gerirTiposAtendimento()"
+      >
+
+        <span class="gestao-icone">
+          T
+        </span>
+
+        <span class="gestao-conteudo">
+
+          <strong>
+            Tipos de atendimento
+          </strong>
+
+          <small>
+            Gerir os tipos de atendimento disponíveis.
+          </small>
+
+        </span>
+
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- Sessão -->
+  <section class="gestor-sessao">
+
+    <div>
+
+      <span class="titulo-pequeno">
+        Sessão
+      </span>
+
+      <h2>
+        Sair da aplicação
+      </h2>
+
+      <p>
+        Termine a sessão neste dispositivo.
+      </p>
+
+    </div>
+
+
+    <!-- Logout -->
+    <button
+      type="button"
+      class="botao-perigo"
+      (click)="sair()"
+    >
+      Terminar sessão
+    </button>
+
+  </section>
+
+</main>

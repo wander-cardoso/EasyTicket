@@ -4,6 +4,7 @@ namespace App\Core;
 
 use App\Responses\JsonResponse;
 use App\Middleware\ProfileMiddleware;
+use App\Requests\Request;
 
 // Responsável por registar e executar as rotas da aplicação
 class Router

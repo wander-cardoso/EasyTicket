@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Services\UtilizadorService;
 use App\Responses\JsonResponse;
-use App\Core\Request;
+use App\Requests\Request;
 use InvalidArgumentException;
 
 // Responsável pelas requisições relacionadas aos utilizadores

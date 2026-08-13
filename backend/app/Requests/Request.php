@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core;
+namespace App\Requests;
 
 // Classe que centraliza o acesso às informações da requisição
 class Request

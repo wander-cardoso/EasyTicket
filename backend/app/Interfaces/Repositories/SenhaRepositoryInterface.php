@@ -10,17 +10,32 @@ interface SenhaRepositoryInterface
     public function listar(): array;
 
     // Consulta uma senha pelo código
-    public function consultarPorCodigo(string $codigo): ?Senha;
+    public function consultarPorCodigo(
+        string $codigo
+    ): ?Senha;
 
     // Persiste uma nova senha
-    public function emitirSenha(Senha $senha): Senha;
+    public function emitirSenha(
+        Senha $senha
+    ): Senha;
 
     // Registra a chamada de uma senha
-    public function chamarProxima( int $balcaoId ): ?Senha;
+    public function chamarProxima(
+        int $balcaoId,
+        int $tipoAtendimentoId
+    ): ?Senha;
 
-    // Inicia o atendimento de uma senha
-    public function iniciarAtendimento(string $codigo): bool;
+    // Inicia o atendimento
+    public function iniciarAtendimento(
+        string $codigo,
+        int $balcaoId
+    ): bool;
 
-    // Finaliza o atendimento de uma senha
-    public function finalizarAtendimento(string $codigo): bool;
+    // Finaliza o atendimento
+    public function finalizarAtendimento(
+        string $codigo,
+        int $balcaoId,
+        ?string $nomeCliente,
+        ?string $telefoneContacto
+    ): bool;
 }
